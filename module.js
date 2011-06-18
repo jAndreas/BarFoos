@@ -13,8 +13,7 @@
 
 !(function _module_wrap( win, doc, undef ) {
 	"use strict";
-	var IR = win.ir = win.ir || { },
-		IRcomponents = IR.components = IR.components || { },
+	var BF = win.BarFoos = win.BarFoos || { };
 
 	ModuleCtor = function _ModuleCtor( Sandbox, AppRef, secret ) {
 		secret	= secret || { };
@@ -37,38 +36,6 @@
 				});
 				
 				return result;
-			},
-			highlight: function _highlight( node, originNode ) {
-				if( Object.type( node ) === 'Node' ) {
-					node = $$( node );
-				}
-				
-				if( node && node.length ) {
-					var orig = node.css( 'boxShadow' );
-					
-					if( !node.is( 'animated' ) && node.is( ':visible' ) ) {
-						node.animate({
-							boxShadow: '0 0 2px 1px rgba(20, 20, 240, 0.8)'
-						}, 400, function _animateCallback() {
-							node.animate({
-								boxShadow: orig
-							}, 400);
-						});
-						
-						if( originNode ) {
-							if( Object.type( originNode ) === 'Node' ) {
-								originNode = $$( originNode );
-							}
-							
-							if( originNode.is( ':visible' ) ) {
-								originNode.jQstop().effect( 'transfer', {
-									to:			node[ 0 ],
-									className:	'transferBorder'
-								}, 400);
-							}
-						}
-					}
-				}
 			}
 		});
 
@@ -183,5 +150,5 @@
 		return Public;
 	};
 	
-	IRcomponents.ModuleCtor = ModuleCtor;
+	BF.ModuleCtor = ModuleCtor;
 }( window, window.document ));

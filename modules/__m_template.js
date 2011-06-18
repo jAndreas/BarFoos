@@ -12,14 +12,13 @@
 
 !(function _module_TEMPLATE_wrap( win, doc, undef ) {
 	"use strict";
-	var IR = win.ir = win.ir || { },
-		IRcomponents = IR.components = IR.components || { },
-		Modules = IRcomponents.Modules = IRcomponents.Modules || { },
+	var BF = win.BarFoos = win.BarFoos || { },
+		Modules = BF.Modules = BF.Modules || { },
 	
-	TEMPLATE = function _TEMPLATE( Sandbox, PagePreview, secret ) {
+	TEMPLATE = function _TEMPLATE( Sandbox, App, secret ) {
 		secret	= secret || { };
 		
-		var	Public	= IRcomponents.ModuleCtor( Sandbox, PagePreview, secret ) || { }, // inherit from "Module Base Pattern"
+		var	Public	= IRcomponents.ModuleCtor( Sandbox, App, secret ) || { }, // inherit from "Module Base Pattern"
 			Private	= { 
 				deploymentData: { 
 					rootNode: <METHOD> or <SELECTOR STRING>
@@ -89,6 +88,7 @@
 			}
 		};
 		
+		// anything which needs to get applied on modules dom nodes should go in here
 		Private.initElements = function _initElements() {
 		};
 			

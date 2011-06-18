@@ -10,14 +10,13 @@
  
 !(function _application_wrap( win ) {
 	"use strict";
-	var	ROOT = win.ROOT = win.ROOT || { },
-		ROOTcomponents = ROOT.components = ROOT.components || { },
-		ROOTapps =ROOT.apps = ROOT.apps || { };
+	var	BF = win.BarFoos = win.BarFoos || { },
+		BFapps = BF.apps = BF.apps || { };
 
-	if( Object.hasKeys( ROOTcomponents, 'Core Sandbox' ) && Object.hasKeys( ROOTapps, 'ExampleApplication' ) ) {
-		var	Core		= ROOTcomponents.Core,
-			Sandbox		= ROOTcomponents.Sandbox,
-			Modules		= ROOTcomponents.Modules;
+	if( Object.hasKeys( BF, 'Core Sandbox' ) && Object.hasKeys( BFapps, 'ExampleApplication' ) ) {
+		var	Core		= BF.Core,
+			Sandbox		= BF.Sandbox,
+			Modules		= BF.Modules;
 	
 		Core.registerSandbox( Sandbox );
 		

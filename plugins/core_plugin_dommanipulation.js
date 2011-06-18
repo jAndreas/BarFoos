@@ -13,7 +13,7 @@
 !(function _core_plugin_ajax_wrap() {
 	"use strict";
 	
-	Object.lookup( 'root.components.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, ExampleApp, undef ) {
+	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
 		/****** ************************************************** *******/
 		var	push	= Array.prototype.push,
@@ -163,11 +163,11 @@
 			css: function _css( prop, value ) {
 				if( value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
-						$.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ), value );
+						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
 					}
 					else {
 						Object.map( prop, function( prop, value ) {
-							return [ ExampleApp.createCSS( prop ), value ];	
+							return [ App.createCSS( prop ), value ];	
 						});
 						
 						$.fn.css.call( slice.call( this, 0 ), prop );
@@ -175,11 +175,11 @@
 					return this;	
 				}
 				else {
-					return $.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ) );
+					return $.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ) );
 				}
 			},
 			animate: (function _animateAdvancedConditional() {
-				var	transition		= PagePreview.createCSS('Transition');
+				var	transition		= App.createCSS('Transition');
 				
 				if(transition ) {
 					return function _animate( props, duration, callback, easing ) {
@@ -187,7 +187,7 @@
 
 						if( Object.type( props ) === 'Object' && Object.type( duration ) === 'Number' ) {
 							Object.map( props, function _mapping( key, value ) {
-								return [ PagePreview.createCSS( key ), value ];
+								return [ App.createCSS( key ), value ];
 							});
 							
 							// check if we got passed in an 'easing string' without a callback.
@@ -248,7 +248,7 @@
 				}
 			}()),
 			stop: (function _stopAdvancedConditional() {
-				var transition	= PagePreview.createCSS('Transition');
+				var transition	= App.createCSS('Transition');
 				
 				if( transition ) {
 					return function _stop( jumpToEnd ) {

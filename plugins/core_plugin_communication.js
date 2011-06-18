@@ -19,7 +19,7 @@
 !(function _core_plugin_ajax_wrap() {
 	"use strict";
 	
-	Object.lookup( 'root.components.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, ExampleApp, undef ) {
+	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		Private.messagePool = { };
 
 		Public.dispatch = function _dispatch( messageInfo ) {

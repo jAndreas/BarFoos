@@ -12,10 +12,9 @@
 
 !(function _init_wrap( win, doc, undef ) {
 	"use strict";
-	var	ROOT = win.ROOT = win.ROOT || { },
-		ROOTapps = ROOT.apps = ROOT.apps || { },
-		ROOTcomponents = ROOT.components = ROOT.components || { },
-		Core = ROOTcomponents.Core,
+	var	BF = win.BarFoos = win.BarFoos || { },
+		BFapps = BF.apps = BF.apps || { },
+		Core = BF.Core,
 
 	ExampleApp = (function _ExampleApp() {
 		var	Public				= { },
@@ -87,7 +86,7 @@
 	}());
 
 	if( Core ) {
-		Core.registerApplication( ROOTapps.ExampleApp = ExampleApp );
+		Core.registerApplication( BFapps.ExampleApp = ExampleApp );
 	}
 	else {
 		throw new TypeError( 'ExampleApp init: Core not available - aborting.' );

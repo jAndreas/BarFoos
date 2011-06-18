@@ -14,8 +14,7 @@
 
 !(function _core_wrap( win, doc, $, undef ) {
 	"use strict";
-	var IR = win.ir = win.ir || { },
-		IRcomponents = IR.components = IR.components || { },
+	var BF = win.BarFoos = win.BarFoos || { };
 	
 	Core = (function _Core() {
 		var moduleData	= { },
@@ -192,7 +191,7 @@
 					}
 				}
 				else {
-					throw new TypeError( 'Core: error(). String expected - received "' + getLastError() + '" instead.' );
+					throw new TypeError( 'Core: error(). String expected - received "' + win.getLastError() + '" instead.' );
 				}
 			}
 			
@@ -246,5 +245,5 @@
 		return Public;
 	}());
 	
-	IRcomponents.Core = Core;
+	BF.Core = Core;
 }( window, window.document, jQuery ));

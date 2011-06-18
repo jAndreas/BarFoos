@@ -16,8 +16,7 @@
 
 !(function _sandbox_wrap( win, doc, undef ) {
 	"use strict";
-	var IR = win.ir = win.ir || { },
-		IRcomponents = IR.components = IR.components || { },
+	var BF = win.BarFoos = win.BarFoos || { };
 	
 	Sandbox = function _Sandbox( Core ) {
 		var Public		= { },
@@ -59,5 +58,5 @@
 		}
 	};
 
-	IRcomponents.Sandbox = Sandbox;
+	BF.Sandbox = Sandbox;
 }( window, window.document ));
