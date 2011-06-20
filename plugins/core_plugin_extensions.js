@@ -6,8 +6,8 @@
  * This code runs in strict mode (if supported by the environment).
  * ------------------------------
  * Author: Andreas Goebel
- * Date: 2011-06-18
- * Changed: 2011-06-18
+ * Date: 2011-06-14
+ * Changed: 2011-06-14
  */
 
 !(function _core_plugin_extensions_wrap() {
