@@ -13,7 +13,7 @@
 
 !(function _module_wrap( win, doc, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { },
+	var BF = win.BarFoos = win.BarFoos || { };
 
 	ModuleCtor = function _ModuleCtor( Sandbox, AppRef, secret ) {
 		secret	= secret || { };
@@ -28,7 +28,7 @@
 			nodes:			{ },
 			// findCachedNode searches the nodes object for a specific element. If found, we return the BarFoos wrapped set.
 			findCachedNode:	function _getNode( nodeRef ) {
-				var thisRef = this,
+				var	thisRef = this,
 					result	= null;
 				
 				Object.keys( thisRef.nodes ).some(function _some( name ) {
@@ -38,6 +38,17 @@
 				});
 				
 				return result;
+			},
+			clearNodeBindings:	function _clearNodeBindings() {
+				var	thisRef = this,
+					nodes	= thisRef.nodes;
+				
+				Object.keys( nodes ).forEach(function _forEachNode( node ) {
+					nodes[ node ].unbind().undelegate();
+					nodes[ node ] = null;
+				});
+				
+				nodes = { };
 			}
 		});
 
