@@ -13,7 +13,7 @@
 
 !(function _module_wrap( win, doc, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { };
+	var BF = win.BarFoos = win.BarFoos || { },
 
 	ModuleCtor = function _ModuleCtor( Sandbox, AppRef, secret ) {
 		secret	= secret || { };
@@ -22,9 +22,11 @@
 			Private	= { },
 			$$		= Sandbox.$;
 		
-		// extend shared "secret" object
+		// extend shared "secret" object. This object is available between instances.
 		Sandbox.extend( secret, {
+			// nodes should hold references on all modules related DOM elements
 			nodes:			{ },
+			// findCachedNode searches the nodes object for a specific element. If found, we return the BarFoos wrapped set.
 			findCachedNode:	function _getNode( nodeRef ) {
 				var thisRef = this,
 					result	= null;
@@ -62,7 +64,7 @@
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
 		/*^^^^^ ^^^^^^^^^^^^^^ BLOCK END ^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
 		
-		// A module has to decide if it may launched multiple times
+		// A module has to decide if it may launched multiple times. "false" by default.
 		Public.multipleInstances = false;
 		
 		// deployAs() decides how a module is installed. static = markup data already available (html,css,images,etc), dynamic = data needs to get loaded, worker = this module has no GUI 
@@ -77,6 +79,7 @@
 			}
 		};
 		
+		// moduleErrorHandler() is somekind of an "empty vessel" function. It trys to create something useful out of the parameters it gets passed in.
 		Public.moduleErrorHandler = function _moduleErrorHandler( ) {
 			var err		= 'Module error:\n',
 				args	= Array.prototype.slice.call( arguments );
@@ -91,12 +94,15 @@
 							// The <center> cannot hold it is too late....
 							var data = param.responseText.split( /<.*?>/ );
 							
+							// this part is highly specialized on apache server responses and needs to get refactored soon.
 							err += '\n' + data[ 4 ] + '\n' + data[ 10 ];
 						}
 					}
 				});
 				
-				Sandbox.dispatch({ name: 'AppError', data: err });
+				Sandbox.dispatch({ name: 'AppError', data: {
+					msg:	err	
+				}});
 			}
 		};
 		
@@ -132,17 +138,19 @@
 							type:	'reference',
 							origin:	'Module Constructor',
 							name:	'_setupStatic',
-							msg:	'deployment data for a static module requires a root node as method or selector string'
+							msg:	'deployment data for a static module requires a method or selector string'
 						});
 					}
 				});
 			}).promise();
 		};
 		
+		// TODO
 		Private.setupDynamic = function _setupDynamic() {
 			console.log('setupDynamic()');
 		};
 		
+		// TODO
 		Private.setupWorker = function _setupWorker() {
 			console.log('setupWorker()');
 		};

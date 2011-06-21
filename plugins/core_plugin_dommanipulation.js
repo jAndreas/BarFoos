@@ -388,6 +388,12 @@
 			outerHeight: function _outerHeight() {
 				return $.fn.outerHeight.apply( this, arguments );
 			},
+			scrollTop: function _scrollTop() {
+				return $.fn.scrollTop.apply( this, arguments );
+			},
+			scrollLeft: function _scrollLeft() {
+				return $.fn.scrollLeft.apply( this, arguments );
+			},
 			delay: function _delay( duration, method /* , arguments */ ) {
 				var that	= this,
 					args	= slice.apply( arguments, [2] );
