@@ -18,7 +18,7 @@
 	TEMPLATE = function _TEMPLATE( Sandbox, App, secret ) {
 		secret	= secret || { };
 		
-		var	Public	= IRcomponents.ModuleCtor( Sandbox, App, secret ) || { }, // inherit from "Module Base Pattern"
+		var	Public	= BF.ModuleCtor( Sandbox, App, secret ) || { }, // inherit from "Module Base Pattern"
 			Private	= { 
 				deploymentData: { 
 					rootNode: <METHOD> or <SELECTOR STRING>
