@@ -120,6 +120,9 @@
 				$.fn.bind.call( this, ev, handler );
 				return this;	
 			},
+			trigger: function _trigger() {
+				$.fn.trigger.apply( this, arguments );
+			},
 			unbind: function _unbind( node, ev, handler ) {
 				$.fn.unbind.call( this, ev, handler );
 				return this;
@@ -163,6 +166,18 @@
 				});
 				
 				return ( confirmed || $.fn.is.apply( this, arguments ) );
+			},
+			addClass: function _addClass() {
+				$.fn._addClass.apply( this, arguments );
+				return this;
+			},
+			removeClass: function _removeClass() {
+				$.fn._removeClass.apply( this, arguments );
+				return this;
+			},
+			toggleClass: function _toggleClass() {
+				$.fn.toggleClass.apply( this, arguments );
+				return this;
 			},
 			css: function _css( prop, value ) {
 				if( value === "" || value || Object.type( prop ) === 'Object' ) {
@@ -359,6 +374,12 @@
 				$.fn.appendTo.apply( this, arguments );
 				
 				return this;
+			},
+			prepend: function _prepend() {
+				$.fn.prepend.apply( this, arguments );
+			},
+			prependTo: function _prependTo() {
+				$.fn.prependTo.apply( this, arguments );
 			},
 			after: function _after() {
 				$.fn.after.apply( this, arguments );
