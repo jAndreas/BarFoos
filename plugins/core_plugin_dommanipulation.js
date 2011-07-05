@@ -10,7 +10,7 @@
  * Changed: 2011-06-14
  */
 
-!(function _core_plugin_ajax_wrap() {
+!(function _core_plugin_dommanipulation_wrap() {
 	"use strict";
 	
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {

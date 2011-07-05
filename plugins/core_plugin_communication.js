@@ -16,7 +16,7 @@
  * Changed: 2011-06-18
  */
 
-!(function _core_plugin_ajax_wrap() {
+!(function _core_plugin_communication_wrap() {
 	"use strict";
 	
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
