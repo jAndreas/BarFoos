@@ -1,23 +1,24 @@
 /* 
  * core_plugin_dommanipulation.js
  * ------------------------------
- * Core plugin: DOM Manipulation (jQuery abstraction level)
+ * Core plugin: DOM Manipulation (jQuery/baseLib abstraction level)
  * 
  * This code runs in strict mode (if supported by the environment).
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-06-14
+ * Changed: 2011-07-06
  */
 
-!(function _core_plugin_dommanipulation_wrap() {
+!(function _core_plugin_ajax_wrap() {
 	"use strict";
 	
-	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
+	Object.lookup( 'ir.components.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, PagePreview, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
 		/****** ************************************************** *******/
 		var	push	= Array.prototype.push,
 			slice	= Array.prototype.slice,
+			splice	= Array.prototype.splice,
 			each	= Array.prototype.forEach,
 			some	= Array.prototype.some,
 			css		= $.fn.css;
@@ -28,8 +29,8 @@
 				push.apply( this, $( sel, args ).get() );
 			}
 
-			Init.prototype = Private.DOM;
-			Init.constructor = _$;
+			Init.prototype		= Private.DOM;
+			Init.constructor	= _$;
 
 			return new Init( selector );
 		};
@@ -66,6 +67,7 @@
 				return $.fn.dequeue.apply( this, arguments );
 			},
 			push: push,
+			splice: splice,
 			clone: function _clone() {
 				var newRef	= this.constructor(),
 					args	= arguments;
@@ -160,6 +162,10 @@
 				$.fn.empty.apply( this, arguments );
 				return this;
 			},
+			select: function _select() {
+				$.fn.select.apply( this, arguments );
+				return this;
+			},
 			is: function _is( check ) {
 				var confirmed = some.call( this, function( elem ) {
 					return !!Public.data( elem, check );
@@ -182,11 +188,11 @@
 			css: function _css( prop, value ) {
 				if( value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
-						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
+						$.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ), value );
 					}
 					else {
 						Object.map( prop, function( prop, value ) {
-							return [ App.createCSS( prop ), value ];	
+							return [ PagePreview.createCSS( prop ), value ];	
 						});
 						
 						$.fn.css.call( slice.call( this, 0 ), prop );
@@ -194,11 +200,11 @@
 					return this;	
 				}
 				else {
-					return $.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ) );
+					return $.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ) );
 				}
 			},
 			animate: (function _animateAdvancedConditional() {
-				var	transition		= App.createCSS('Transition');
+				var	transition		= PagePreview.createCSS('Transition');
 				
 				if(transition ) {
 					return function _animate( props, duration, callback, easing ) {
@@ -208,7 +214,7 @@
 						if( Object.type( props ) === 'Object' && Object.type( duration ) === 'Number' ) {
 							// map passed css propertys into browser natives
 							Object.map( props, function _mapping( key, value ) {
-								return [ App.createCSS( key ), value ];
+								return [ PagePreview.createCSS( key ), value ];
 							});
 							
 							// check if we got passed in an 'easing string' without a callback.
@@ -289,7 +295,7 @@
 				}
 			}()),
 			stop: (function _stopAdvancedConditional() {
-				var transition	= App.createCSS('Transition');
+				var transition	= PagePreview.createCSS('Transition');
 				
 				if( transition ) {
 					return function _stop( jumpToEnd ) {
