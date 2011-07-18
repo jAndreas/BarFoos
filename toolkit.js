@@ -9,7 +9,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-15
- * Modified: 2011-06-01
+ * Modified: 2011-07-15 Modified Object.lookup()
  */
 
 !(function _toolkit_wrap( win, doc, undef ) {
@@ -101,25 +101,35 @@
 				else {
 					lookup.split( /\./ ).forEach(function _forEach( key, index, arr ) {
 						if( check ) {
-							if( key in check ) {
-								chain.push( check = check[ key ] );
-								lastkey = key;
+							if( typeof check === 'object' ) {
+								if( key in check ) {
+									chain.push( check = check[ key ] );
+									lastkey = key;
+								}
+								else {
+									if( !failGracefully ) {
+										throw new TypeError( 'cannot resolve "' + key + '" in ' + lastkey );	
+									}
+								}
 							}
 							else {
 								if( !failGracefully ) {
-									throw new TypeError( 'cannot resolve "' + key + '" in ' + lastkey );	
+									throw new TypeError( '"' + check + '" ' + ' does not seem to be an object' );	
 								}
 							}
 						}
 						else {
+							lastkey = key;
 							chain.push( check = win[ key ] );
 						}
 					});
 					
-					cache[ lookup ] = {
-						chain: chain,
-						check: check
-					};
+					if( check ) {
+						cache[ lookup ] = {
+							chain: chain,
+							check: check
+						};
+					}
 				}
 			}
 			
