@@ -9,12 +9,12 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-17
- * Changed: 2011-06-16
+ * Changed: 2011-07-12
  */
 
 !(function _core_wrap( win, doc, $, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { };
+	var BF = win.BarFoos = win.BarFoos || { },
 	
 	Core = (function _Core() {
 		var moduleData	= { },
@@ -88,13 +88,13 @@
 			return Public;
 		};
 		
-		Public.start = function _start( moduleID ) {
+		Public.start = function _start( moduleID, args ) {
 			if( moduleID in moduleData ) {
 				var data = moduleData[ moduleID ];
 				try {
 					if( data.instances && data.instances.length ) {
 						if( data.multipleInstances ) {
-							data.instances.push( data.creator( new Sandbox( this ), Application ) );
+							data.instances.push( data.creator( Sandbox( this ), Application, args || { } ) );
 							data.instances.slice( -1 )[ 0 ].init();
 						}
 						else {
@@ -102,7 +102,7 @@
 						}
 					}
 					else {
-						data.instances.push( data.creator( new Sandbox( this ), Application ) );
+						data.instances.push( data.creator( Sandbox( this ), Application, args || { } ) );
 						data.instances[ 0 ].init();
 						data.multipleInstances = data.instances[ 0 ].multipleInstances;
 					}
@@ -191,7 +191,7 @@
 					}
 				}
 				else {
-					throw new TypeError( 'Core: error(). String expected - received "' + win.getLastError() + '" instead.' );
+					throw new TypeError( 'Core: error(). String expected - received "' + getLastError() + '" instead.' );
 				}
 			}
 			

@@ -8,7 +8,7 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-23
- * Changed: 2011-06-16
+ * Changed: 2011-07-18 - moved highlight() into application layer
  */
 
 !(function _module_wrap( win, doc, undef ) {
@@ -42,9 +42,14 @@
 			clearNodeBindings:	function _clearNodeBindings() {
 				var	thisRef = this,
 					nodes	= thisRef.nodes;
-				
+				console.info('clearNodeBindings()');
 				Object.keys( nodes ).forEach(function _forEachNode( node ) {
 					nodes[ node ].unbind().undelegate();
+					
+					if( Public.removeFromDOM ) {
+						nodes[ node ].remove();
+					}
+					
 					nodes[ node ] = null;
 				});
 				
@@ -77,6 +82,9 @@
 		
 		// A module has to decide if it may launched multiple times. "false" by default.
 		Public.multipleInstances = false;
+		
+		// A module has to decide if its visual representation gets removed on module stop. "false" by default.
+		Public.removeFromDOM = false;
 		
 		// deployAs() decides how a module is installed. static = markup data already available (html,css,images,etc), dynamic = data needs to get loaded, worker = this module has no GUI 
 		Public.deployAs = function _deployAs( deployment, data ) {
@@ -157,8 +165,53 @@
 		};
 		
 		// TODO
-		Private.setupDynamic = function _setupDynamic() {
+		Private.setupDynamic = function _setupDynamic( data ) {
+			var $$target = null;
 			console.log('setupDynamic()');
+			
+			return Sandbox.Promise(function _setupDynamicPromise( promise ) {
+				if( Object.type( data ) === 'Object' ) {
+					if( $$target = data.targetContainer ) {
+						if( /Node|String/.test( Object.type( data.targetContainer ) ) ) {
+							$$target = $$( data.targetContainer );
+						}
+						
+						if( $$target && $$target.length ) {
+							Public.removeFromDOM = true;
+							
+							Object.keys( data ).forEach(function _forEach( type ) {
+								switch( type ) {
+									case 'htmlString':
+										promise.resolve( $$( data[ type ] ).appendTo( $$target ) );
+										break;
+									case 'ajax':
+										break;
+									case 'stream':
+										break;
+								}
+							});
+						}
+					}
+					else {
+						Sandbox.error({
+							type:	'reference',
+							origin:	'Module Constructor',
+							name:	'_setupDynamic',
+							msg:	'targetContainer as selector string, node or BarFoos object required.'
+						});
+					}
+				}
+				else {
+					promise.reject();
+					
+					Sandbox.error({
+						type:	'reference',
+						origin:	'Module Constructor',
+						name:	'_setupDynamic',
+						msg:	'expected an Object, received "' + win.getLastError() + '" instead'
+					});
+				}
+			}).promise();
 		};
 		
 		// TODO

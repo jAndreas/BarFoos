@@ -7,14 +7,14 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-07-06
+ * Changed: 2011-07-18
  */
 
-!(function _core_plugin_ajax_wrap() {
+!(function _core_plugin_dommanipulation_wrap() {
 	"use strict";
 	
-	Object.lookup( 'ir.components.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, PagePreview, undef ) {
-		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
+	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
+		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.2 ******** *******/
 		/****** ************************************************** *******/
 		var	push	= Array.prototype.push,
 			slice	= Array.prototype.slice,
@@ -188,11 +188,11 @@
 			css: function _css( prop, value ) {
 				if( value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
-						$.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ), value );
+						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
 					}
 					else {
 						Object.map( prop, function( prop, value ) {
-							return [ PagePreview.createCSS( prop ), value ];	
+							return [ App.createCSS( prop ), value ];	
 						});
 						
 						$.fn.css.call( slice.call( this, 0 ), prop );
@@ -200,11 +200,11 @@
 					return this;	
 				}
 				else {
-					return $.fn.css.call( slice.call( this, 0 ), PagePreview.createCSS( prop ) );
+					return $.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ) );
 				}
 			},
 			animate: (function _animateAdvancedConditional() {
-				var	transition		= PagePreview.createCSS('Transition');
+				var	transition		= App.createCSS('Transition');
 				
 				if(transition ) {
 					return function _animate( props, duration, callback, easing ) {
@@ -214,7 +214,7 @@
 						if( Object.type( props ) === 'Object' && Object.type( duration ) === 'Number' ) {
 							// map passed css propertys into browser natives
 							Object.map( props, function _mapping( key, value ) {
-								return [ PagePreview.createCSS( key ), value ];
+								return [ App.createCSS( key ), value ];
 							});
 							
 							// check if we got passed in an 'easing string' without a callback.
@@ -295,7 +295,7 @@
 				}
 			}()),
 			stop: (function _stopAdvancedConditional() {
-				var transition	= PagePreview.createCSS('Transition');
+				var transition	= App.createCSS('Transition');
 				
 				if( transition ) {
 					return function _stop( jumpToEnd ) {
@@ -394,6 +394,16 @@
 			},
 			insertAfter: function _insertAfter() {
 				$.fn.insertAfter.apply( this, arguments );
+				
+				return this;
+			},
+			before: function _before() {
+				$.fn.before.apply( this, arguments );
+				
+				return this;
+			},
+			insertBefore: function _insertBefore() {
+				$.fn.insertBefore.apply( this, arguments );
 				
 				return this;
 			},
