@@ -13,7 +13,7 @@
 
 !(function _module_wrap( win, doc, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { };
+	var BF = win.BarFoos = win.BarFoos || { },
 
 	ModuleCtor = function _ModuleCtor( Sandbox, AppRef, secret ) {
 		secret	= secret || { };

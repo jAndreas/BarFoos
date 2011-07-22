@@ -16,7 +16,7 @@
 
 !(function _sandbox_wrap( win, doc, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { };
+	var BF = win.BarFoos = win.BarFoos || { },
 	
 	Sandbox = function _Sandbox( Core ) {
 		var Public		= { },
@@ -39,7 +39,7 @@
 		
 		Private.access = [	'error',	// Core
 							'listen', 'dispatch', 'forget',	// plugin Communication
-							'request', 'getJSON',	// plugin Ajax
+							'ajax', 'getJSON',	// plugin Ajax
 							'Promise', 'when', // Core
 							'$', 'ready', 'contains', // plugin DOM manipulation
 							'data', 'removeData', 'hasData', // plugin Data
