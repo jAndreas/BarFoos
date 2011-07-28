@@ -90,11 +90,17 @@
 		
 		Public.start = function _start( moduleID, args ) {
 			if( moduleID in moduleData ) {
-				var data = moduleData[ moduleID ];
+				var	data = moduleData[ moduleID ],
+					args = args || { };
+				
+				$.extend(args, {
+					moduleID: moduleID
+				});
+
 				try {
 					if( data.instances && data.instances.length ) {
 						if( data.multipleInstances ) {
-							data.instances.push( data.creator( Sandbox( this ), Application, args || { } ) );
+							data.instances.push( data.creator( Sandbox( this ), Application, args ) );
 							data.instances.slice( -1 )[ 0 ].init();
 						}
 						else {
@@ -102,7 +108,7 @@
 						}
 					}
 					else {
-						data.instances.push( data.creator( Sandbox( this ), Application, args || { } ) );
+						data.instances.push( data.creator( Sandbox( this ), Application, args ) );
 						data.instances[ 0 ].init();
 						data.multipleInstances = data.instances[ 0 ].multipleInstances;
 					}
