@@ -29,7 +29,9 @@
 		/****** Core Methods (called by the core only) *********** *******/
 		/****** ************************************************** *******/
 		Public.init = function _init() {
-			Public.deployAs( 'static', Private.deploymentData ).done( Private.cacheElements );
+			Public.deployAs( 'static', Private.deploymentData ).done(function( rootNode ) {
+				Private.cacheElements( rootNode ).bindDOMevents().initElements();
+			});
 			
 			Sandbox.listen( [ 'EXAMPLE_EVENT_1', 'EXAMPLE_EVENT_2' ], Private.eventHandler, this );
 		};
@@ -70,8 +72,7 @@
 				};
 			}()));
 			
-			Private.bindDOMevents();
-			Private.initElements();
+			return Private;
 		};
 		
 		// bindDOMevents will take care of browser DOM level events
@@ -86,9 +87,12 @@
 					}});
 				});
 			}
+			
+			return Private;
 		};
 		
 		Private.initElements = function _initElements() {
+			return Private;
 		};
 			
 		return Public;
