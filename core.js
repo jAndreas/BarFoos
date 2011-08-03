@@ -9,7 +9,7 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-17
- * Changed: 2011-07-12
+ * Changed: 2011-08-03 - changed debug output syntax so it'll not get removed from ANT strip
  */
 
 !(function _core_wrap( win, doc, $, undef ) {
@@ -181,9 +181,9 @@
 					var output = '\nApplication error\n\n' + 'Origin: ' + (err.origin || 'General') + '\n' + 'Calling context: ' + (err.name || 'Unknown') + '\n' + 'Message: ' +  (err.msg || '');
 
 					// backup output. If for some reason the base library lays an outer try/catch around a handler, we've lost our chance to bubble our error
-					win.console.group('App Failure');
-					win.console.info( output );
-					win.console.groupEnd('App Failure');
+					win[ 'console' ].group('App Failure');
+					win[ 'console' ].info( output );
+					win[ 'console' ].groupEnd('App Failure');
 					
 					switch( err.type.toLowerCase() ) {
 						case 'type':
