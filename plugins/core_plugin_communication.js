@@ -13,7 +13,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-18
- * Changed: 2011-06-18
+ * Changed: 2011-08-09 - Added .listenOnce() and shortcut .once()
  */
 
 !(function _core_plugin_communication_wrap() {
@@ -115,6 +115,17 @@
 					});
 				}
 			});
+			
+			return Public;
+		};
+		
+		Public.listenOnce = Public.once = function _listenOnce( eventName, callback, scope ) {
+			function fireAndForget() {
+				callback.apply( this, arguments );
+				Public.forget( eventName, fireAndForget );
+			}
+			
+			Public.listen( eventName, fireAndForget, scope );
 			
 			return Public;
 		};
