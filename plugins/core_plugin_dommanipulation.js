@@ -7,7 +7,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-07-18
+ * Changed: 2011-08-10 - added .parent(), backlink object reference added to .clone(), .parent(), .next(), .prev(), .closest()
  */
 
 !(function _core_plugin_dommanipulation_wrap() {
@@ -71,7 +71,8 @@
 			clone: function _clone() {
 				var newRef	= this.constructor(),
 					args	= arguments;
-					
+				
+				newRef.prevRef = this;	
 				push.apply( newRef, $.fn.clone.apply( this, args ).get() );
 
 				return newRef;
@@ -92,6 +93,7 @@
 				var newRef	= this.constructor(),
 					args	= arguments;
 				
+				newRef.prevRef = this;
 				push.apply( newRef, $.fn.prev.apply( this, arguments ).get() );
 				
 				return newRef;
@@ -100,6 +102,7 @@
 				var newRef	= this.constructor(),
 					args	= arguments;
 				
+				newRef.prevRef = this;
 				push.apply( newRef, $.fn.next.apply( this, arguments ).get() );
 				
 				return newRef;
@@ -108,7 +111,17 @@
 				var newRef	= this.constructor(),
 					args	= arguments;
 					
+				newRef.prevRef = this;
 				push.apply( newRef, $.fn.closest.apply( this, arguments ).get() );
+				
+				return newRef;
+			},
+			parent: function _parent() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.parent.apply( this, arguments ).get() );
 				
 				return newRef;
 			},
