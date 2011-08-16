@@ -63,6 +63,9 @@
 			domManip: function _domManip() {
 				return $.fn.domManip.apply( this, arguments );
 			},
+			eq: function _eq() {
+				return $.fn.eq.apply( this, arguments );
+			},
 			dequeue: function _dequeue() {
 				return $.fn.dequeue.apply( this, arguments );
 			},
@@ -125,6 +128,15 @@
 				
 				return newRef;
 			},
+			last: function _last() {
+				var newRef      = this.constructor(),
+                                        args    = arguments;
+
+                                newRef.prevRef = this;
+                                push.apply( newRef, $.fn.last.apply( this, arguments ).get() );
+
+                                return newRef;
+			},
 			get: function _get( index ) {
 				return $.fn.get.call( this, index );
 			},
@@ -164,8 +176,8 @@
 				return arguments.length > 1 ? this : result;
 			},
 			attr: function _attr() {
-				$.fn.attr.apply( this, arguments );
-				return this;
+				var result = $.fn.attr.apply( this, arguments );
+				return arguments.length > 1 ? this : result;
 			},
 			removeAttr: function _removeAttr() {
 				$.fn.removeAttr.apply( this, arguments );
@@ -337,7 +349,9 @@
 								setTimeout(function() {
 									if( elem.aniprops ) {
 										for( var prop in elem.aniprops ) {
-											$.fn.css.call( [ elem ], prop, elem.aniprops[prop] );
+											if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
+												$.fn.css.call( [ elem ], prop, elem.aniprops[prop] );
+											}
 										}
 									}
 								}, 1);
