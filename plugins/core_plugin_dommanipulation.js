@@ -211,7 +211,7 @@
 				return this;
 			},
 			css: function _css( prop, value ) {
-				if( value === "" || value || Object.type( prop ) === 'Object' ) {
+				if( value === "" || value === 0 || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
 						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
 					}
