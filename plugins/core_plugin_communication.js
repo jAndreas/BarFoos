@@ -13,7 +13,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-18
- * Changed: 2011-08-09 - Added .listenOnce() and shortcut .once()
+ * Changed: 2011-08-24 - Added a callback mechanism which may fire, after an event was dispatched
  */
 
 !(function _core_plugin_communication_wrap() {
@@ -37,7 +37,11 @@
 									msg:	'unable to dispatch event "' + messageInfo.name + '". Original error: "' + ex.message + '"'
 								});
 							}
-						});	
+						});
+
+						if( typeof messageInfo.callback === 'function' ) {
+							messageInfo.callback();
+						}
 					}
 				}
 				else {
