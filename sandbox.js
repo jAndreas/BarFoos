@@ -42,7 +42,7 @@
 							'ajax', 'getJSON',	// plugin Ajax
 							'Promise', 'when', // Core
 							'$', 'ready', 'contains', // plugin DOM manipulation
-							'data', 'removeData', 'hasData', // plugin Data
+							'data', 'removeData', 'hasData', 'lsRead', 'lsWrite', 'lsStore', 'lsClear', // plugin Data
 							'extend' // Core
 		];
 

@@ -17,6 +17,21 @@
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
 		/****** ************************************************** *******/
+		var	storageObject		= { },
+			buffer			= { },
+			access			= PagePreview.name || 'BarFoos';
+		
+		if( Object.type( win.localStorage ) === 'Storage' ) {
+			storageObject = win.localStorage;
+		}
+		else {
+			// read cookie into storageObject
+		}
+		
+		if( storageObject[ access ] ) {
+			buffer = win.JSON.parse( storageObject[ access ] );
+		}
+
 		Public.data = function _data( elem, key, value ) {
 			var rVal = $.data( elem, key, value );
 			
@@ -30,6 +45,30 @@
 		
 		Public.hasData = function _hasData( elem ) {
 			return $.hasData( elem );
+		};
+
+		Public.lsWrite = function _lsWrite( key, value ) {
+			buffer[ key ] = value;
+			return Public;
+		};
+		
+		Public.lsRead = function _lsRead( key ) {
+			return buffer[ key ];
+		};
+		
+		Public.lsStore = function lsStore() {
+			storageObject[ access ] = win.JSON.stringify( buffer );
+			return Public;
+		};
+		
+		Public.lsClear = function _clear() {
+			buffer = { };
+			storageObject[ access ] = null;
+			return Public;
+		};
+		
+		win.onbeforeunload = function _onbeforeunload() {
+			Public.lsStore();
 		};
 	});
 }());

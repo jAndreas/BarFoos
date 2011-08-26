@@ -7,7 +7,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-08-24 - added .parent(), backlink object reference added to .clone(), .parent(), .next(), .prev(), .closest()
+ * Changed: 2011-08-26 - added .parent(), backlink object reference added to .clone(), .parent(), .next(), .prev(), .closest()
  */
 
 !(function _core_plugin_dommanipulation_wrap() {
@@ -71,11 +71,20 @@
 			},
 			push: push,
 			splice: splice,
+			add: function _add() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.add.apply( this, args ).get() );
+
+				return newRef;
+			},
 			clone: function _clone() {
 				var newRef	= this.constructor(),
 					args	= arguments;
-				
-				newRef.prevRef = this;	
+					
+				newRef.prevRef = this;
 				push.apply( newRef, $.fn.clone.apply( this, args ).get() );
 
 				return newRef;
@@ -122,20 +131,20 @@
 			parent: function _parent() {
 				var newRef	= this.constructor(),
 					args	= arguments;
-					
+				
 				newRef.prevRef = this;
 				push.apply( newRef, $.fn.parent.apply( this, arguments ).get() );
 				
 				return newRef;
 			},
 			last: function _last() {
-				var newRef      = this.constructor(),
-                                        args    = arguments;
-
-                                newRef.prevRef = this;
-                                push.apply( newRef, $.fn.last.apply( this, arguments ).get() );
-
-                                return newRef;
+				var newRef	= this.constructor(),
+					args	= arguments;
+				
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.last.apply( this, arguments ).get() );
+				
+				return newRef;
 			},
 			wrap: function _wrap() {
 				return $.fn.wrap.apply( this, arguments );
@@ -334,7 +343,8 @@
 						
 						that.each(function( index, elem ) {
 							elem.stopAnimation = true;
-							$.fn.css.call( [ elem ], transition, '' );
+							
+							css.call( [ elem ], transition, '' );
 							
 							// TODO: this section should probably goe into 'jumpToEnd'
 							if( Object.type( Public.data( elem, 'animationTimer' ) ) === 'Array' ) {
@@ -356,7 +366,7 @@
 									if( elem.aniprops ) {
 										for( var prop in elem.aniprops ) {
 											if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
-												$.fn.css.call( [ elem ], prop, elem.aniprops[prop] );
+												css.call( [ elem ], prop, elem.aniprops[prop] );
 											}
 										}
 									}
@@ -368,7 +378,7 @@
 					};
 				}
 				else {
-					return function _stop() {
+					return function _jQstop() {
 						var that = this;
 						
 						$.fn.stop.apply( that, arguments );
