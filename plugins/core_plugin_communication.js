@@ -13,7 +13,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-18
- * Changed: 2011-08-24 - Added a callback mechanism which may fire, after an event was dispatched
+ * Changed: 2011-08-30 - Added a .stopPropagation property to the event object which may get used to stop further handlers from firing.
  */
 
 !(function _core_plugin_communication_wrap() {
@@ -26,7 +26,7 @@
 			if( Object.type( messageInfo ) === 'Object' ) {
 				if( typeof messageInfo.name === 'string' ) {
 					if( messageInfo.name in Private.messagePool ) {
-						Private.messagePool[ messageInfo.name ].forEach(function _forEach( listener ) {
+						Private.messagePool[ messageInfo.name ].some(function _some( listener ) {
 							try {
 								listener.callback.apply( listener.scope, [ messageInfo ] );
 							} catch( ex ) {
@@ -37,6 +37,8 @@
 									msg:	'unable to dispatch event "' + messageInfo.name + '". Original error: "' + ex.message + '"'
 								});
 							}
+							
+							return messageInfo.stopPropagation;
 						});
 
 						if( typeof messageInfo.callback === 'function' ) {
