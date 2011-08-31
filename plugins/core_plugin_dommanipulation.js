@@ -63,6 +63,9 @@
 			domManip: function _domManip() {
 				return $.fn.domManip.apply( this, arguments );
 			},
+			triggerHandler: function _triggerHandler() {
+				return $.fn.triggerHandler.apply( this, arguments );
+			},
 			eq: function _eq() {
 				return $.fn.eq.apply( this, arguments );
 			},
@@ -473,6 +476,10 @@
 			},
 			scrollLeft: function _scrollLeft() {
 				return $.fn.scrollLeft.apply( this, arguments );
+			},
+			data: function _data() {
+				var result = $.fn.data.apply( this, arguments );
+				return arguments.length > 1 ? this : result;
 			},
 			delay: function _delay( duration, method /* , arguments */ ) {
 				var that	= this,
