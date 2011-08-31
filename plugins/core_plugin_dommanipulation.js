@@ -181,17 +181,17 @@
 			val: function _val() {
 				var result = $.fn.val.apply( this, arguments );
 				
-				return arguments.length > 1 ? this : result;
+				return arguments.length ? this : result;
 			},
 			text: function _text() {
 				var result = $.fn.text.apply( this, arguments );
 				
-				return arguments.length > 1 ? this : result;
+				return arguments.length ? this : result;
 			},
 			html: function _html() {
 				var result = $.fn.html.apply( this, arguments );
 				
-				return arguments.length > 1 ? this : result;
+				return arguments.length ? this : result;
 			},
 			attr: function _attr() {
 				var result = $.fn.attr.apply( this, arguments );
