@@ -204,6 +204,10 @@
 			return Public;
 		};
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^BLOCK END^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
+
+		Public.trim = function _trim() {
+			return $.trim.apply( null, arguments );
+		};
 		
 		Public.Promise = function _Promise() {
 			return $.Deferred.apply( null, arguments );
