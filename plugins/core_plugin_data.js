@@ -67,8 +67,8 @@
 			return Public;
 		};
 		
-		win.onbeforeunload = function _onbeforeunload() {
+		$( win ).bind( 'beforeunload', function _beforeUnload() {
 			Public.lsStore();
-		};
+		});
 	});
 }());
