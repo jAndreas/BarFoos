@@ -432,6 +432,8 @@
 			},
 			prependTo: function _prependTo() {
 				$.fn.prependTo.apply( this, arguments );
+
+				return this;
 			},
 			after: function _after() {
 				$.fn.after.apply( this, arguments );
