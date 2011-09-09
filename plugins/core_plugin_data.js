@@ -17,7 +17,7 @@
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
 		/****** ************************************************** *******/
-		var	storageObject		= { },
+		var storageObject	= { },
 			buffer			= { },
 			access			= PagePreview.name || 'BarFoos';
 		
@@ -31,7 +31,7 @@
 		if( storageObject[ access ] ) {
 			buffer = win.JSON.parse( storageObject[ access ] );
 		}
-
+		
 		Public.data = function _data( elem, key, value ) {
 			var rVal = $.data( elem, key, value );
 			
@@ -46,7 +46,7 @@
 		Public.hasData = function _hasData( elem ) {
 			return $.hasData( elem );
 		};
-
+		
 		Public.lsWrite = function _lsWrite( key, value ) {
 			buffer[ key ] = value;
 			return Public;

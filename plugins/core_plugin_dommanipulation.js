@@ -97,7 +97,7 @@
 					args	= arguments;
 				
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.find.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.find.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -109,7 +109,7 @@
 					args	= arguments;
 				
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.prev.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.prev.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -118,7 +118,7 @@
 					args	= arguments;
 				
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.next.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.next.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -127,7 +127,7 @@
 					args	= arguments;
 					
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.closest.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.closest.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -136,7 +136,7 @@
 					args	= arguments;
 				
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.parent.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.parent.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -145,15 +145,27 @@
 					args	= arguments;
 				
 				newRef.prevRef = this;
-				push.apply( newRef, $.fn.last.apply( this, arguments ).get() );
+				push.apply( newRef, $.fn.last.apply( this, args ).get() );
 				
 				return newRef;
 			},
 			wrap: function _wrap() {
-				return $.fn.wrap.apply( this, arguments );
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.wrap.apply( this, args ).get() );
+				
+				return newRef;
 			},
 			wrapAll: function _wrapAll() {
-				return $.fn.wrapAll.apply( this, arguments );
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.wrapAll.apply( this, args ).get() );
+				
+				return newRef;
 			},
 			get: function _get( index ) {
 				return $.fn.get.call( this, index );
@@ -168,7 +180,7 @@
 			trigger: function _trigger() {
 				$.fn.trigger.apply( this, arguments );
 			},
-			unbind: function _unbind( node, ev, handler ) {
+			unbind: function _unbind( ev, handler ) {
 				$.fn.unbind.call( this, ev, handler );
 				return this;
 			},
@@ -229,7 +241,7 @@
 				return this;
 			},
 			css: function _css( prop, value ) {
-				if( value === "" || value === 0 || value || Object.type( prop ) === 'Object' ) {
+				if( value === 0 || value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
 						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
 					}
@@ -309,7 +321,7 @@
 													myElem.stopAnimation = null;
 												}
 											}
-										}, duration + 50));
+										}, duration + 15));
 									}( elem ));
 								}
 								
@@ -381,7 +393,7 @@
 					};
 				}
 				else {
-					return function _jQstop() {
+					return function _jQstopFallback() {
 						var that = this;
 						
 						$.fn.stop.apply( that, arguments );
@@ -432,7 +444,7 @@
 			},
 			prependTo: function _prependTo() {
 				$.fn.prependTo.apply( this, arguments );
-
+				
 				return this;
 			},
 			after: function _after() {

@@ -127,8 +127,8 @@
 		
 		Public.listenOnce = Public.once = function _listenOnce( eventName, callback, scope ) {
 			function fireAndForget() {
-				callback.apply( this, arguments );
 				Public.forget( eventName, fireAndForget );
+				callback.apply( this, arguments );
 			}
 			
 			Public.listen( eventName, fireAndForget, scope );
