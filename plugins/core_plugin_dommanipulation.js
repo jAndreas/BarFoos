@@ -359,7 +359,14 @@
 						that.each(function( index, elem ) {
 							elem.stopAnimation = true;
 							
-							css.call( [ elem ], transition, '' );
+							css.call( [ elem ], transition, '0ms all linear' );
+							if( elem.aniprops ) {
+								for( var prop in elem.aniprops ) {
+									if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
+										css.call( [ elem ], prop, css.call( [elem], prop ) );
+									}
+								}
+							}
 							
 							// TODO: this section should probably goe into 'jumpToEnd'
 							if( Object.type( Public.data( elem, 'animationTimer' ) ) === 'Array' ) {
@@ -381,11 +388,11 @@
 									if( elem.aniprops ) {
 										for( var prop in elem.aniprops ) {
 											if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
-												css.call( [ elem ], prop, elem.aniprops[prop] );
+												css.call( [ elem ], prop, elem.aniprops[ prop ] );
 											}
 										}
 									}
-								}, 1);
+								}, 15);
 							}
 						});
 						

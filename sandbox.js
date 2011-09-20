@@ -38,7 +38,7 @@
 		}
 		
 		Private.access = [	'error',	// Core
-							'listen', 'dispatch', 'forget',	// plugin Communication
+							'listen', 'dispatch','listenOnce', 'once', 'forget',	// plugin Communication
 							'ajax', 'getJSON',	// plugin Ajax
 							'Promise', 'when', // Core
 							'$', 'ready', 'contains', // plugin DOM manipulation

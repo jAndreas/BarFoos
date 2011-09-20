@@ -15,8 +15,42 @@
 !(function _toolkit_wrap( win, doc, undef ) {
 	"use strict";
 	
-	var ToStr = Object.prototype.toString,
-		lastError = [ ];
+	var ToStr		= Object.prototype.toString,
+		slice		= Array.prototype.slice,
+		lastError	= [ ];
+	
+	// Function.prototype.bind()	
+	Function.prototype.bind = Function.prototype.bind || function _bind( that ) {
+		var target, args, bound;
+		
+		if( typeof this.apply != "function" || typeof this.call != "function" )
+			return new TypeError();
+
+		target	= this;
+		args	= slice.call( arguments, 1 );
+		
+		bound = function _bound() {
+			var F, self, result;
+			
+			if( this instanceof bound ) {
+				F = function _F(){};
+				F.prototype = target.prototype;
+				
+				self	= new F;
+				result	= target.apply( self, args.concat( slice.call(arguments) ) );
+				
+				if( result !== null && Object( result ) === result )
+					return result;
+					
+				return self;
+			}
+			else {
+				return target.apply( that, args.concat( slice.call(arguments) ) );
+			}
+		};
+		
+		return bound;
+	};
 	
 	// Date.now()
 	Date.now = Date.now || function _now() {
@@ -110,12 +144,16 @@
 									if( !failGracefully ) {
 										throw new TypeError( 'cannot resolve "' + key + '" in ' + lastkey );	
 									}
+									
+									check = null;
 								}
 							}
 							else {
 								if( !failGracefully ) {
 									throw new TypeError( '"' + check + '" ' + ' does not seem to be an object' );	
 								}
+								
+								check = null;
 							}
 						}
 						else {

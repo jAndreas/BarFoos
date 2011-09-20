@@ -25,6 +25,16 @@
 					$.fn.effect.apply( this, arguments );
 					
 					return this;
+				},
+				draggable:		function _draggable() {
+					$.fn.draggable.apply( this, arguments );
+					
+					return this;
+				},
+				slider:			function _slider() {
+					$.fn.slider.apply( this, arguments );
+					
+					return this;
 				}
 			});
 		}

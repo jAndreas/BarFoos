@@ -25,9 +25,12 @@
 		Public.dispatch = function _dispatch( messageInfo ) {
 			if( Object.type( messageInfo ) === 'Object' ) {
 				if( typeof messageInfo.name === 'string' ) {
+			//console.groupCollapsed('MEDIATOR: Dispatching event ', messageInfo.name);
 					if( messageInfo.name in Private.messagePool ) {
 						Private.messagePool[ messageInfo.name ].some(function _some( listener ) {
 							try {
+							//console.info( 'eventData for listener #' + idx );
+							//console.dir( messageInfo );
 								listener.callback.apply( listener.scope, [ messageInfo ] );
 							} catch( ex ) {
 								Public.error({
@@ -37,14 +40,15 @@
 									msg:	'unable to dispatch event "' + messageInfo.name + '". Original error: "' + ex.message + '"'
 								});
 							}
-							
+						
 							return messageInfo.stopPropagation;
 						});
-
-						if( typeof messageInfo.callback === 'function' ) {
-							messageInfo.callback();
-						}
 					}
+					
+					if( typeof messageInfo.callback === 'function' ) {
+						messageInfo.callback( messageInfo.response );
+					}
+			//console.groupEnd();
 				}
 				else {
 					Public.error({
@@ -71,7 +75,7 @@
 			if( Object.type( eventName ) !== 'Array' ) {
 				eventName = [ eventName ];
 			}
-			
+		//console.info('MEDIATOR: Listening for ', eventName, 'method: ', callback);	
 			eventName.forEach(function _forEach( event ) {
 				if( typeof event === 'string' ) {
 					if( typeof Private.messagePool[ event ] === 'undefined' ) {
@@ -98,7 +102,7 @@
 			if( Object.type( eventName ) !== 'Array' ) {
 				eventName = [ eventName ];
 			}
-			
+		//console.info('MEDIATOR: Forgetting for ', eventName, 'method: ', callback);
 			eventName.forEach(function( event ) {
 				if( typeof event === 'string' ) {
 					if( Private.messagePool[ event ] && Object.type( Private.messagePool[ event ] ) === 'Array' ) {

@@ -90,27 +90,29 @@
 		
 		Public.start = function _start( moduleID, args ) {
 			if( moduleID in moduleData ) {
-				var	data = moduleData[ moduleID ],
-					args = args || { };
-				
-				$.extend(args, {
-					moduleID: moduleID
+				var data		= moduleData[ moduleID ],
+					args		= args || { },
+					instances	= data.instances;
+					
+				$.extend( args, {
+					moduleID:		moduleID,
+					moduleIndex:	instances.length
 				});
-
+				
 				try {
-					if( data.instances && data.instances.length ) {
+					if( instances && instances.length ) {
 						if( data.multipleInstances ) {
-							data.instances.push( data.creator( Sandbox( this ), Application, args ) );
-							data.instances.slice( -1 )[ 0 ].init();
+							instances.push( data.creator( Sandbox( this ), Application, args ) );
+							instances.slice( -1 )[ 0 ].init();
 						}
 						else {
 							throw new Error( 'Module "' + moduleID + '" does not allow multiple instances' );
 						}
 					}
 					else {
-						data.instances.push( data.creator( Sandbox( this ), Application, args ) );
-						data.instances[ 0 ].init();
-						data.multipleInstances = data.instances[ 0 ].multipleInstances;
+						instances.push( data.creator( Sandbox( this ), Application, args ) );
+						instances[ 0 ].init();
+						data.multipleInstances = instances[ 0 ].multipleInstances;
 					}
 				} catch( ex ) {
 					Public.error({
@@ -130,7 +132,7 @@
 				var data = moduleData[ moduleID ];
 				try {
 					if( data.instances && data.instances.length ) {
-						if( !index ) {
+						if( index === undef ) {
 							data.instances.forEach(function( inst ) {
 								inst.destroy();
 								inst = null;	
@@ -204,7 +206,7 @@
 			return Public;
 		};
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^BLOCK END^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
-
+		
 		Public.trim = function _trim() {
 			return $.trim.apply( null, arguments );
 		};

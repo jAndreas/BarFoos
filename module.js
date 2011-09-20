@@ -39,21 +39,22 @@
 				
 				return result;
 			},
-			clearNodeBindings:	function _clearNodeBindings() {
+			clearNodeBindings:	function _clearNodeBindings( disableOnly ) {
 				var	thisRef = this,
 					nodes	= thisRef.nodes;
-				console.info('clearNodeBindings()');
+			
 				Object.keys( nodes ).forEach(function _forEachNode( node ) {
 					nodes[ node ].unbind().undelegate();
 					
-					if( Public.removeFromDOM ) {
+					if( Public.removeFromDOM && !disableOnly ) {
 						nodes[ node ].remove();
+						nodes[ node ] = null;
 					}
-					
-					nodes[ node ] = null;
 				});
 				
-				nodes = { };
+				if( !disableOnly ) {
+					nodes = { }; secret = { };
+				}
 			}
 		});
 
@@ -100,7 +101,7 @@
 		
 		// moduleErrorHandler() is somekind of an "empty vessel" function. It trys to create something useful out of the parameters it gets passed in.
 		Public.moduleErrorHandler = function _moduleErrorHandler( ) {
-			var err		= 'Module error:\n',
+			var err		= 'Module error (' + secret.moduleID + '):\n',
 				args	= Array.prototype.slice.call( arguments );
 			
 			if( args.length ) {
@@ -166,14 +167,20 @@
 		
 		// TODO
 		Private.setupDynamic = function _setupDynamic( data ) {
-			var $$target = null;
-			console.log('setupDynamic()');
+			var $$target		= null,
+				connectMethod	= 'appendTo';
+			//console.log('setupDynamic()');
 			
 			return Sandbox.Promise(function _setupDynamicPromise( promise ) {
 				if( Object.type( data ) === 'Object' ) {
 					if( $$target = data.targetContainer ) {
+						// if we got passed in a selector-string or a DOMNode ref, create a BarFoos Object
 						if( /Node|String/.test( Object.type( data.targetContainer ) ) ) {
 							$$target = $$( data.targetContainer );
+						}
+						
+						if( Object.type( data.connectMethod ) === 'String' && typeof $$target[ data.connectMethod ] === 'function' ) {
+							connectMethod = data.connectMethod
 						}
 						
 						if( $$target && $$target.length ) {
@@ -182,7 +189,7 @@
 							Object.keys( data ).forEach(function _forEach( type ) {
 								switch( type ) {
 									case 'htmlString':
-										promise.resolve( $$( data[ type ] ).appendTo( $$target ) );
+										promise.resolve( $$( data[ type ] )[ connectMethod ]( $$target ) );
 										break;
 									case 'ajax':
 										break;

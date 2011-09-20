@@ -7,38 +7,37 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-08
- * Changed: 2011-06-21
+ * Changed: 2011-08-10
  */
 
 !(function _module_TEMPLATE_wrap( win, doc, undef ) {
 	"use strict";
-	var	BF		= win.BarFoos = win.BarFoos || { },
-		Modules = BF.Modules = BF.Modules || { },
+	var IR = win.ir = win.ir || { },
+		IRcomponents = IR.components = IR.components || { },
+		Modules = IRcomponents.Modules = IRcomponents.Modules || { },
 	
-	TEMPLATE = function _TEMPLATE( Sandbox, App, secret ) {
+	TEMPLATE = function _TEMPLATE( Sandbox, PagePreview, secret ) {
 		secret	= secret || { };
 		
-		var	Public	= BF.ModuleCtor( Sandbox, App, secret ) || { }, // inherit from "Module Base Pattern"
+		var	Public	= IRcomponents.ModuleCtor( Sandbox, PagePreview, secret ) || { }, // inherit from "Module Base Pattern"
 			Private	= { 
 				deploymentData: { 
 					rootNode: <METHOD> or <SELECTOR STRING>
-					}
 				}
 			};
 
 		/****** Core Methods (called by the core only) *********** *******/
 		/****** ************************************************** *******/
 		Public.init = function _init() {
-			Public.deployAs( 'static', Private.deploymentData ).done(function( rootNode ) {
+			Sandbox.listen( [ 'EXAMPLE_EVENT_1', 'EXAMPLE_EVENT_2' ], Private.eventHandler, this );
+			
+			Public.deployAs( 'static', Private.deploymentData ).done( function _done( rootNode ) {
 				Private.cacheElements( rootNode ).bindDOMevents().initElements();
 			});
-			
-			Sandbox.listen( [ 'EXAMPLE_EVENT_1', 'EXAMPLE_EVENT_2' ], Private.eventHandler, this );
 		};
 		
 		Public.destroy = function _destroy() {
 			secret.clearNodeBindings();
-			
 			Sandbox.forget( [ 'EXAMPLE_EVENT_1', 'EXAMPLE_EVENT_2' ], Private.eventHandler );
 		};
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
@@ -46,8 +45,8 @@
 		
 		// eventHandler takes care of application level events
 		Private.eventHandler = function _eventHandler( event ) {
-			var	originalEv	= event.data.originalEvent,
-				rootNode	= secret.nodes.rootNode;
+			var	eventData	= event.data || { },
+				nodes		= secret.nodes;
 			
 			switch( event.name ) {
 				case 'EXAMPLE_EVENT_1':
