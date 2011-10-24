@@ -8,7 +8,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-18
- * Changed: 2011-06-18
+ * Changed: 2011-10-23 - added lsRemove()
  */
 
 !(function _core_plugin_data_wrap() {
@@ -17,9 +17,9 @@
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
 		/****** ************************************************** *******/
-		var storageObject	= { },
-			buffer			= { },
-			access			= PagePreview.name || 'BarFoos';
+		var	storageObject	= { },
+			buffer		= { },
+			access		= App.name || 'BarFoos';
 		
 		if( Object.type( win.localStorage ) === 'Storage' ) {
 			storageObject = win.localStorage;
@@ -54,6 +54,11 @@
 		
 		Public.lsRead = function _lsRead( key ) {
 			return buffer[ key ];
+		};
+		
+		Public.lsRemove = function _lsRemove( key ) {
+			delete buffer[ key ];
+			return Public;
 		};
 		
 		Public.lsStore = function lsStore() {

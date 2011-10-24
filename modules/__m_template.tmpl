@@ -7,7 +7,7 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-06-08
- * Changed: 2011-08-10
+ * Changed: 2011-10-24 - changed init/deploy code
  */
 
 !(function _module_TEMPLATE_wrap( win, doc, undef ) {
@@ -31,8 +31,10 @@
 		Public.init = function _init() {
 			Sandbox.listen( [ 'EXAMPLE_EVENT_1', 'EXAMPLE_EVENT_2' ], Private.eventHandler, this );
 			
-			Public.deployAs( 'static', Private.deploymentData ).done( function _done( rootNode ) {
+			Public.deployAs( 'static', Private.deploymentData ).then( function _done( rootNode ) {
 				Private.cacheElements( rootNode ).bindDOMevents().initElements();
+			}, function _fail( err ) {
+				Public.moduleErrorHandler( err ).destroy();
 			});
 		};
 		

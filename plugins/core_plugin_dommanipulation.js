@@ -7,14 +7,14 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-08-26 - added .parent(), backlink object reference added to .clone(), .parent(), .next(), .prev(), .closest()
+ * Changed: 2011-10-22 - added .replaceWith()
  */
 
 !(function _core_plugin_dommanipulation_wrap() {
 	"use strict";
 	
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
-		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.2 ******** *******/
+		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.4 ******** *******/
 		/****** ************************************************** *******/
 		var	push	= Array.prototype.push,
 			slice	= Array.prototype.slice,
@@ -164,6 +164,15 @@
 					
 				newRef.prevRef = this;
 				push.apply( newRef, $.fn.wrapAll.apply( this, args ).get() );
+				
+				return newRef;
+			},
+			replaceWith: function _replaceWith() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.replaceWith.apply( this, args ).get() );
 				
 				return newRef;
 			},
