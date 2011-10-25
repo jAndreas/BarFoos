@@ -7,7 +7,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-10-22 - added .replaceWith()
+ * Changed: 2011-10-25 - fixed a bug in .animate(). Element.aniprops gets now deleted after animation.
  */
 
 !(function _core_plugin_dommanipulation_wrap() {
@@ -312,12 +312,13 @@
 									// invoke a new function(-context) to avoid that all timeout callbacks would closure the same variable
 									// store the timeout id in the 'animationTimer' array which is a data property
 									(function _freeClosure( myElem ) {
-										Public.data( myElem, 'animationTimer').push(setTimeout(function _animationDelay() {
+										Public.data( myElem, 'animationTimer').push(win.setTimeout(function _animationDelay() {
 											// TODO: initialize an interval which checks if there still are css prop deltas to be more accurate. 
 											css.call( [ myElem ], transition, '' );
 											
 											Public.removeData( myElem, 'animated' );
-											
+											delete myElem.aniprops;
+										
 											// if elements animQueue is available and not empty, execute outstanding animations first
 											if( Object.type( Public.data( myElem, 'animQueue') ) === 'Array' && Public.data( myElem, 'animQueue' ).length ) {
 												_animate.apply( that, Public.data( myElem, 'animQueue').shift() );
@@ -369,6 +370,7 @@
 							elem.stopAnimation = true;
 							
 							css.call( [ elem ], transition, '0ms all linear' );
+							
 							if( elem.aniprops ) {
 								for( var prop in elem.aniprops ) {
 									if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
@@ -380,7 +382,7 @@
 							// TODO: this section should probably goe into 'jumpToEnd'
 							if( Object.type( Public.data( elem, 'animationTimer' ) ) === 'Array' ) {
 								Public.data( elem, 'animationTimer' ).forEach(function _forEach( timerID ) {
-									clearInterval( timerID );
+									win.clearInterval( timerID );
 								});
 							}
 							
@@ -393,7 +395,7 @@
 							Public.removeData( elem, 'animated' );
 							
 							if( jumpToEnd ) {
-								setTimeout(function() {
+								win.setTimeout(function() {
 									if( elem.aniprops ) {
 										for( var prop in elem.aniprops ) {
 											if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
@@ -518,8 +520,8 @@
 				if( typeof method === 'string' ) {
 					method = that[ method ];
 				}
-				
-				setTimeout(function() {
+			
+				win.setTimeout(function _delayedFunction() {
 					method.apply( that, args );
 				}, duration);
 				
