@@ -23,15 +23,18 @@
 		Private.messagePool = { };
 
 		Public.dispatch = function _dispatch( messageInfo ) {
+			var listenerCount = 0;
+			
 			if( Object.type( messageInfo ) === 'Object' ) {
 				if( typeof messageInfo.name === 'string' ) {
 			//console.groupCollapsed('MEDIATOR: Dispatching event ', messageInfo.name);
 					if( messageInfo.name in Private.messagePool ) {
-						Private.messagePool[ messageInfo.name ].some(function _some( listener ) {
+						Private.messagePool[ messageInfo.name ].some(function _some( listener, idx ) {
 							try {
-							//console.info( 'eventData for listener #' + idx );
-							//console.dir( messageInfo );
+						//	console.info( 'eventData for listener #' + idx );
+						//	console.dir( messageInfo );
 								listener.callback.apply( listener.scope, [ messageInfo ] );
+								listenerCount++;
 							} catch( ex ) {
 								Public.error({
 									type:	'error',
@@ -46,7 +49,7 @@
 					}
 					
 					if( typeof messageInfo.callback === 'function' ) {
-						messageInfo.callback( messageInfo.response );
+						messageInfo.callback( listenerCount, messageInfo.response );
 					}
 			//console.groupEnd();
 				}
