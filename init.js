@@ -39,17 +39,30 @@
 				cache			= { };
 	
 			return function _createCSSClosure( name ) {
-				name = name.replace( /^./, name.charAt( 0 ).toUpperCase() ).replace( /-/, '' );
+				// convert names like "font-width" into css camelCase form like "fontWidth"
+				name = name.replace( /-(\w)/, function _replace( $1, $2 ) {
+					return $2.toUpperCase();
+				});
 				
+				// check if we already got that css string in our lookup-cache table
 				if( name in cache ) { return cache[ name ]; }
 
+				// now check if "name" can get found by looping over propertys from our testDiv style object 
 				for( var prop in divStyle ) {
 					if( prop.toLowerCase() === name.toLowerCase() ) {
 						cache[ name ] = prop;
 						return prop;
 					}
 				}
+				
+				// at this point, do another check for WebKit browsers
+				if( name in divStyle ) {
+					cache[ name ] = name;
+					return name;
+				}
 
+				// still no match, try to lookup things with vendor prefixes, again any match will get cached in our closured lookup table object.
+				name = name.replace( /^./, name.charAt( 0 ).toUpperCase() );
 				'Moz Webkit ms O'.split( ' ' ).some(function _some( prefix ) {
 					ret = prefix + name;
 
@@ -75,15 +88,13 @@
 						}
 					}
 
+					// we tried, we tried really hard but we could not resolve anything for that css string.
 					ret = null;
 				});
 
 				return ret;
 			};
 		}());
-		
-		return Public;
-	}());
 
 	if( Core ) {
 		Core.registerApplication( BFapps.ExampleApp = ExampleApp );
