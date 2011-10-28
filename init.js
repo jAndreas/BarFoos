@@ -40,7 +40,7 @@
 	
 			return function _createCSSClosure( name ) {
 				// convert names like "font-width" into css camelCase form like "fontWidth"
-				name = name.replace( /-(\w)/, function _replace( $1, $2 ) {
+				name = name.replace( /-(\w)/g, function _replace( $1, $2 ) {
 					return $2.toUpperCase();
 				});
 				
