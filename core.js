@@ -9,7 +9,7 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-17
- * Changed: 2011-08-03 - changed debug output syntax so it'll not get removed from ANT strip
+ * Changed: 2011-08-11 - added "flaggedForRemoval" property to public module object on .stop()
  */
 
 !(function _core_wrap( win, doc, $, undef ) {
@@ -148,6 +148,7 @@
 					if( data.instances && data.instances.length ) {
 						if( key === undef ) {
 							data.instances.forEach(function _forEach( inst ) {
+								inst.flaggedForRemoval = true; // flag the Modules "Public" object so it has a chance to skip/cancel running requests
 								inst.destroy();
 								inst = null;	
 							});
