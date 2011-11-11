@@ -88,6 +88,33 @@
 			return Public;
 		};
 		
+		Public.loadModule = function _loadModule( path, moduleID ) {
+			var scr		= doc.createElement( 'script' ),
+				head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
+		
+			return $.Deferred( function _createDeferred( promise ) {
+				if( typeof path === 'string' ) {
+					scr.onload		= function _onload() {
+						if( !scr.readyState || /complete|loaded/.test( scr.readyState ) ) {
+							promise.resolve();
+						}
+					};
+					
+					scr.onerror		= promise.reject;
+					
+					scr.type		= 'text/javascript';
+					scr.async		= true;
+					scr.defer		= true;
+					scr.src			= path;
+					
+					head.insertBefore( scr, head.firstChild );
+				}
+				else {
+					promise.reject();
+				}
+			}).promise();
+		};
+		
 		Public.start = function _start( moduleID, args ) {
 			if( moduleID in moduleData ) {
 				var data		= moduleData[ moduleID ],
