@@ -39,7 +39,7 @@
 		
 		Private.access = [	'error',	// Core
 							'listen', 'listenOnce', 'once', 'dispatch', 'forget',	// plugin Communication
-							'request', 'getJSON',	// plugin Ajax
+							'ajax', 'getJSON',	// plugin Ajax
 							'Promise', 'when', // Core
 							'$', 'ready', 'contains', // plugin DOM manipulation
 							'data', 'removeData', 'hasData', 'lsRead', 'lsWrite', 'lsRemove', 'lsStore', 'lsClear', // plugin Data

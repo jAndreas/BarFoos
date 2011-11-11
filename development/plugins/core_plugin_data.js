@@ -15,7 +15,7 @@
 	"use strict";
 	
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
-		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
+		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.7.0 ******** *******/
 		/****** ************************************************** *******/
 		var	storageObject	= { },
 			buffer		= { },
@@ -25,7 +25,7 @@
 			storageObject = win.localStorage;
 		}
 		else {
-			// read cookie into storageObject
+			// TODO: read cookie into storageObject
 		}
 		
 		if( storageObject[ access ] ) {
