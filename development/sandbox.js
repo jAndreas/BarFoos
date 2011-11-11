@@ -43,7 +43,7 @@
 							'Promise', 'when', // Core
 							'$', 'ready', 'contains', // plugin DOM manipulation
 							'data', 'removeData', 'hasData', 'lsRead', 'lsWrite', 'lsRemove', 'lsStore', 'lsClear', // plugin Data
-							'extend', 'trim' // Core
+							'extend', 'trim', 'createCSS' // Core
 		];
 
 		if( Object.type( Core ) === 'Object' ) {

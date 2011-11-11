@@ -252,11 +252,11 @@
 			css: function _css( prop, value ) {
 				if( value === 0 || value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
-						$.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ), value );
+						$.fn.css.call( slice.call( this, 0 ), Public.createCSS( prop ), value );
 					}
 					else {
 						Object.map( prop, function( prop, value ) {
-							return [ App.createCSS( prop ), value ];	
+							return [ Public.createCSS( prop ), value ];	
 						});
 						
 						$.fn.css.call( slice.call( this, 0 ), prop );
@@ -264,11 +264,11 @@
 					return this;	
 				}
 				else {
-					return $.fn.css.call( slice.call( this, 0 ), App.createCSS( prop ) );
+					return $.fn.css.call( slice.call( this, 0 ), Public.createCSS( prop ) );
 				}
 			},
 			animate: (function _animateAdvancedConditional() {
-				var	transition		= App.createCSS('Transition');
+				var	transition		= Public.createCSS('Transition');
 				
 				if(transition ) {
 					return function _animate( props, duration, callback, easing ) {
@@ -278,7 +278,7 @@
 						if( Object.type( props ) === 'Object' && Object.type( duration ) === 'Number' ) {
 							// map passed css propertys into browser natives
 							Object.map( props, function _mapping( key, value ) {
-								return [ App.createCSS( key ), value ];
+								return [ Public.createCSS( key ), value ];
 							});
 							
 							// check if we got passed in an 'easing string' without a callback.
@@ -360,7 +360,7 @@
 				}
 			}()),
 			stop: (function _stopAdvancedConditional() {
-				var transition	= App.createCSS('Transition');
+				var transition	= Public.createCSS('Transition');
 				
 				if( transition ) {
 					return function _stop( jumpToEnd ) {
