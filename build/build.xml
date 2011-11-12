@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="Boilerplate Build" default="build" basedir="../"> <!-- one back since we're in build/ -->
+<project name="BarFoos Build" default="build" basedir="../"> <!-- one back since we're in build/ -->
 
 
     <!-- Load in Ant-Contrib to give us access to some very useful tasks! -->
@@ -76,7 +76,7 @@
         <echo message="====================================================================="/>
         <echo message="Welcome to the BarFoos Build Script!"/>
         <echo message=" "/>
-        <echo message="We're going to get your site all ship-shape and ready for prime time."/>
+        <echo message="Let's cook things together now."/>
         <echo message="====================================================================="/>
         <echo message=" "/>
         <echo message=" "/>

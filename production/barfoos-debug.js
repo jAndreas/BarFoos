@@ -11058,53 +11058,55 @@ $.transform = {
 		Private.messagePool = { };
 
 		Public.dispatch = function _dispatch( messageInfo ) {
-			var listenerCount = 0;
-			
-			if( Object.type( messageInfo ) === 'Object' ) {
-				if( typeof messageInfo.name === 'string' ) {
-			//console.groupCollapsed('MEDIATOR: Dispatching event ', messageInfo.name);
-					if( messageInfo.name in Private.messagePool ) {
-						Private.messagePool[ messageInfo.name ].some(function _some( listener, idx ) {
-							try {
-						//	console.info( 'eventData for listener #' + idx );
-						//	console.dir( messageInfo );
-								listener.callback.apply( listener.scope, [ messageInfo ] );
-								listenerCount++;
-							} catch( ex ) {
-								Public.error({
-									type:	'error',
-									origin:	'Core COM',
-									name:	'_dispatch -> _forEach',
-									msg:	'unable to dispatch event "' + messageInfo.name + '". Original error: "' + ex.message + '"'
-								});
-							}
+			win.setTimeout(function _setTimeoutDispatch() {
+				var listenerCount = 0;
+				
+				if( Object.type( messageInfo ) === 'Object' ) {
+					if( typeof messageInfo.name === 'string' ) {
+				//console.groupCollapsed('MEDIATOR: Dispatching event ', messageInfo.name);
+						if( messageInfo.name in Private.messagePool ) {
+							Private.messagePool[ messageInfo.name ].some(function _some( listener, idx ) {
+								try {
+							//	console.info( 'eventData for listener #' + idx );
+							//	console.dir( messageInfo );
+									listener.callback.apply( listener.scope, [ messageInfo ] );
+									listenerCount++;
+								} catch( ex ) {
+									Public.error({
+										type:	'error',
+										origin:	'Core COM',
+										name:	'_dispatch -> _forEach',
+										msg:	'unable to dispatch event "' + messageInfo.name + '". Original error: "' + ex.message + '"'
+									});
+								}
+							
+								return messageInfo.stopPropagation;
+							});
+						}
 						
-							return messageInfo.stopPropagation;
+						if( typeof messageInfo.callback === 'function' ) {
+							messageInfo.callback( listenerCount, messageInfo.response );
+						}
+				//console.groupEnd();
+					}
+					else {
+						Public.error({
+							type:	'syntax',
+							origin:	'Core COM',
+							name:	'_dispatch',
+							msg:	'expected an event type as string'
 						});
 					}
-					
-					if( typeof messageInfo.callback === 'function' ) {
-						messageInfo.callback( listenerCount, messageInfo.response );
-					}
-			//console.groupEnd();
 				}
 				else {
 					Public.error({
 						type:	'syntax',
 						origin:	'Core COM',
 						name:	'_dispatch',
-						msg:	'expected an event type as string'
+						msg:	'expected an object'
 					});
 				}
-			}
-			else {
-				Public.error({
-					type:	'syntax',
-					origin:	'Core COM',
-					name:	'_dispatch',
-					msg:	'expected an object'
-				});
-			}
+			}, 0);
 			
 			return Public;
 		};
@@ -11513,6 +11515,9 @@ $.transform = {
 			toggleClass: function _toggleClass() {
 				$.fn.toggleClass.apply( this, arguments );
 				return this;
+			},
+			hasClass: function _hasClass() {
+				return $.fn.hasClass.apply( this, arguments );
 			},
 			css: function _css( prop, value ) {
 				if( value === 0 || value === "" || value || Object.type( prop ) === 'Object' ) {

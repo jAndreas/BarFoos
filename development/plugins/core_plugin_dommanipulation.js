@@ -255,6 +255,9 @@
 				$.fn.toggleClass.apply( this, arguments );
 				return this;
 			},
+			hasClass: function _hasClass() {
+				return $.fn.hasClass.apply( this, arguments );
+			},
 			css: function _css( prop, value ) {
 				if( value === 0 || value === "" || value || Object.type( prop ) === 'Object' ) {
 					if( value ) {
