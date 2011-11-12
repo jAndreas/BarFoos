@@ -11266,7 +11266,7 @@ $.transform = {
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-05-03
- * Changed: 2011-10-25 - fixed a bug in .animate(). Element.aniprops gets now deleted after animation.
+ * Changed: 2011-11-12 - added .on() and .off() methods as for jQuery 1.7.0
  */
 
 !(function _core_plugin_dommanipulation_wrap() {
@@ -11327,6 +11327,12 @@ $.transform = {
 			},
 			eq: function _eq() {
 				return $.fn.eq.apply( this, arguments );
+			},
+			on: function _on() {
+				return $.fn.on.apply( this, arguments );
+			},
+			off: function _off() {
+				return $.fn.off.apply( this, arguments );
 			},
 			dequeue: function _dequeue() {
 				return $.fn.dequeue.apply( this, arguments );
