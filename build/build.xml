@@ -36,6 +36,11 @@
             <antcall target="-build.production" />
     </target>
     
+    <target name="debug">
+            <echo message="Building a Debug Environment..."/>
+            <antcall target="-build.debug" />
+    </target>
+    
         
     <!--
     *************************************************
@@ -48,20 +53,21 @@
             depends="-rev,
 		     		 -js.all.minify,
                      -js.main.concat,
-                     -copy"/>
+                     -copy,
+                     -clean"/>
+                     
+    <target name="-build.debug"
+            depends="-rev,
+                     -js.debug.concat,
+                     -copy.debug,
+                     -clean"/>
 
     <!--
     *************************************************
     * FUNCTION TARGETS                              *
     *************************************************
     -->
-        
-    <target name="-clean" description="(PRIVATE) Wipe the previous build (Deletes the dir.publish directory">
-    <!-- This is a private target -->        
-        <echo message="Cleaning up previous build directory..."/>
-        <delete dir="./${dir.intermediate}/"/>
-        <delete dir="./${dir.publish}/"/>
-    </target>
+
     
     
     <target name="-rev" description="(PRIVATE) Increase the current build number by one and set build date">
@@ -115,11 +121,41 @@
         
         <echo message="A copy of all non-dev files are now in: ./${dir.publish}."/>
     </target>
+    
+    <target name="-copy.debug" depends="-mkdirs">
+    <!-- This is a private target -->
+    
+        <echo message="Copying over new files..."/>
+
+        <copy todir="./${dir.publish}">
+            <filelist dir="./${dir.intermediate}/${dir.js}/" files="barfoos-debug.js"/>
+        </copy>
+        
+        <echo message="A copy of all non-dev files are now in: ./${dir.publish}."/>
+    </target>
     	
     <target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.">
 		<echo message="Concatenating Main JS scripts..."/>
 		<!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
 		<concat destfile="./${dir.intermediate}/${dir.js}/barfoos.js">
+			<fileset dir="./${dir.intermediate}/${dir.js}/baselib/">
+				<include name="**/*.js"/>
+			</fileset>
+			<filelist dir="./${dir.intermediate}/${dir.js}/" files="toolkit.js, core.js, sandbox.js, module.js"/>
+			<fileset dir="./${dir.intermediate}/${dir.js}/plugins/">
+				<include name="**/*.js"/>
+			</fileset>
+		</concat>
+	</target>
+	
+    <target name="-js.debug.concat" description="(PRIVATE) Concatenates the JS files in dir.">
+		<echo message="Concatenating Main JS scripts..."/>
+		
+		<copy todir="${dir.intermediate}/">
+            <fileset dir="${dir.source}/" includes="${dir.js}/**/*.js"  />
+        </copy>
+		<!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+		<concat destfile="./${dir.intermediate}/${dir.js}/barfoos-debug.js">
 			<fileset dir="./${dir.intermediate}/${dir.js}/baselib/">
 				<include name="**/*.js"/>
 			</fileset>
@@ -152,6 +188,10 @@
         </apply>
 
         <!-- at this point all js files are minified with their original names -->
-
     </target>    
+    
+    <target name="-clean" description="remove the intermediate folder">
+        <echo message="Removing intermediate directory..."/>
+        <delete dir="./${dir.intermediate}/"/>
+    </target>
 </project>
