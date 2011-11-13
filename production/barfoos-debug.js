@@ -10308,7 +10308,8 @@ $.transform = {
 
 !(function _core_wrap( win, doc, $, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { },
+	var BF		= win.BarFoos = win.BarFoos || { },
+		Modules	= BF.Modules = BF.Modules || { },
 	
 	Core = (function _Core() {
 		var moduleData	= { },
@@ -10322,6 +10323,10 @@ $.transform = {
 		Public.registerApplication = function _registerApplication( app ) {
 			if( Object.type( app ) === 'Object' ) {
 				Application = app;
+				
+				if( 'environment' in Application ) {
+					$.extend( Private, Application.environment );
+				}
 			}
 			else {
 				Public.error({
@@ -10352,10 +10357,10 @@ $.transform = {
 		};
 		
 		Public.registerModule = function _registerModule( moduleID, creator ) {
-			if( Object.type( moduleID ) === 'String' && Object.type( creator ) === 'Function' ) {
+			if( Object.type( moduleID ) === 'String' ) {
 				if( !(moduleID in moduleData) ) {
 					moduleData[ moduleID ] = {
-						creator: creator,
+						creator: creator || Public.loadModule( moduleID ),
 						instances: [ ]
 					};
 				}
@@ -10375,38 +10380,45 @@ $.transform = {
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerModule',
-					msg:	'string/function pair expected, received ' + getLastError( -2 ) + '/' + getLastError( -1 ) + ' instead'
+					msg:	'string expected, received ' + getLastError() + ' instead'
 				});
 			}
 			
 			return Public;
 		};
 		
-		Public.loadModule = function _loadModule( path, moduleID ) {
-			var scr		= doc.createElement( 'script' ),
-				head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
-		
-			return $.Deferred( function _createDeferred( promise ) {
-				if( typeof path === 'string' ) {
+		Public.loadModule = function _loadModule( moduleID ) {
+			if( Object.type( moduleID ) === 'String' ) {
+				var scr		= doc.createElement( 'script' ),
+					head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
+			
+				return $.Deferred( function _createDeferred( promise ) {
 					scr.onload		= function _onload() {
 						if( !scr.readyState || /complete|loaded/.test( scr.readyState ) ) {
-							promise.resolve();
+							promise.resolve( moduleID, Modules[ moduleID ] );
 						}
 					};
 					
-					scr.onerror		= promise.reject;
+					scr.onerror		= function _onerror( err ) {
+						promise.reject( moduleID, err );
+					};
 					
 					scr.type		= 'text/javascript';
 					scr.async		= true;
 					scr.defer		= true;
-					scr.src			= path;
+					scr.src			= Private.modulePath + Private.modulePrefix + moduleID.toLowerCase() + '.js';
 					
 					head.insertBefore( scr, head.firstChild );
-				}
-				else {
-					promise.reject();
-				}
-			}).promise();
+				}).promise();
+			}
+			else {
+				Public.error({
+					type:	'type',
+					origin:	'Core',
+					name:	'_loadModule',
+					msg:	'string was expected, received ' + getLastError() + ' instead'
+				});
+			}
 		};
 		
 		Public.start = function _start( moduleID, args ) {
@@ -10438,14 +10450,21 @@ $.transform = {
 						}
 					}
 					else {
-						instances.push( data.creator( Sandbox( this ), Application, args ) );
-						instances[ 0 ].moduleKey = Private.globalModuleKey;
-						initResult = instances[ 0 ].init();
-						data.multipleInstances = instances[ 0 ].multipleInstances;
-						
-						if( initResult === -1 ) {
-							Public.stop( moduleID, instances[ 0 ].moduleKey );
-						}
+						$.when( data.creator ).then(function _done( moduleName, moduleCreator ) {
+							data.creator = moduleCreator || data.creator;
+					
+							instances.push( data.creator( Sandbox( Core ), Application, args ) );
+							instances[ 0 ].moduleKey = Private.globalModuleKey;
+							initResult = instances[ 0 ].init();
+							data.multipleInstances = instances[ 0 ].multipleInstances;
+							
+							if( initResult === -1 ) {
+								Public.stop( moduleID, instances[ 0 ].moduleKey );
+							}
+						}, function _fail( moduleName, err ) {
+							console.log(err);
+							console.log('unable to load module ', moduleName );
+						});
 					}
 				} catch( ex ) {
 					Public.error({
@@ -10640,7 +10659,12 @@ $.transform = {
 		}());
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^BLOCK END^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
 		
-		Private.globalModuleKey = 0;
+		$.extend(Private, {
+			globalModuleKey:	0,
+			jsPath:				'/js',
+			modulePath:			'/js/modules/',
+			modulePrefix:		'm_'
+		});
 		
 		Private.formatStacktrace = function( strace ) {
 			if( Object.type( strace ) === 'String' ) {
