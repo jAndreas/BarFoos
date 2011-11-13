@@ -10454,16 +10454,15 @@ $.transform = {
 							data.creator = moduleCreator || data.creator;
 					
 							instances.push( data.creator( Sandbox( Core ), Application, args ) );
-							instances[ 0 ].moduleKey = Private.globalModuleKey;
-							initResult = instances[ 0 ].init();
-							data.multipleInstances = instances[ 0 ].multipleInstances;
+							instances[ 0 ].moduleKey	= Private.globalModuleKey;
+							initResult					= instances[ 0 ].init();
+							data.multipleInstances		= instances[ 0 ].multipleInstances;
 							
 							if( initResult === -1 ) {
 								Public.stop( moduleID, instances[ 0 ].moduleKey );
 							}
 						}, function _fail( moduleName, err ) {
-							console.log(err);
-							console.log('unable to load module ', moduleName );
+							// TODO: I did not decide what to do here. Try reloading the module ? Throw ? Warn? 
 						});
 					}
 				} catch( ex ) {
