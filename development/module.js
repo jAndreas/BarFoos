@@ -44,7 +44,7 @@
 					nodes	= thisRef.nodes;
 			
 				Object.keys( nodes ).forEach(function _forEachNode( node ) {
-					nodes[ node ].unbind().undelegate();
+					nodes[ node ].off();
 					
 					if( Public.removeFromDOM && !disableOnly ) {
 						nodes[ node ].remove();
@@ -208,8 +208,10 @@
 										promise.resolve( $$( data[ type ] )[ connectMethod ]( $$target ) );
 										break;
 									case 'ajax':
+										// TODO: implement
 										break;
 									case 'stream':
+										// TODO: implement
 										break;
 								}
 							});

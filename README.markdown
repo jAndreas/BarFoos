@@ -30,3 +30,5 @@ relationship between modules. That guarantees any change that was made in
 an "inter module communication", cannot crash your application.
 
 The Core easily can get extended by plugins.
+
+![BarFoos architecture](http://www.typeofnan.com/img/architecture.jpg "BarFoos architecture")
