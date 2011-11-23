@@ -51,7 +51,7 @@
 				assign( methodName );
 			});
 			
-			return Public;
+			return Object.freeze( Public );
 		}
 		else {
 			throw new ReferenceError( 'Sandbox: No Core specified' );

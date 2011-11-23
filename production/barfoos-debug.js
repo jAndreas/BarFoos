@@ -10323,6 +10323,8 @@ $.transform = {
 		Public.registerApplication = function _registerApplication( app ) {
 			if( Object.type( app ) === 'Object' ) {
 				Application = app;
+
+				Object.freeze( Public );
 				
 				if( 'environment' in Application ) {
 					$.extend( Private, Application.environment );
@@ -10333,7 +10335,7 @@ $.transform = {
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerApplication',
-					msg:	'object was expected, received ' + getLastError() + ' instead'
+					msg:	'object was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -10349,7 +10351,7 @@ $.transform = {
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerSandbox',
-					msg:	'function was expected, received ' + getLastError() + ' instead'
+					msg:	'function was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -10380,7 +10382,7 @@ $.transform = {
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerModule',
-					msg:	'string expected, received ' + getLastError() + ' instead'
+					msg:	'string expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -10560,7 +10562,7 @@ $.transform = {
 					}
 				}
 				else {
-					throw new TypeError( 'Core: error(). String expected - received "' + getLastError() + '" instead.' );
+					throw new TypeError( 'Core: error(). String expected - received "' + win.getLastError() + '" instead.' );
 				}
 			}
 			
@@ -10745,7 +10747,7 @@ $.transform = {
 				assign( methodName );
 			});
 			
-			return Public;
+			return Object.freeze( Public );
 		}
 		else {
 			throw new ReferenceError( 'Sandbox: No Core specified' );
@@ -10800,7 +10802,7 @@ $.transform = {
 					nodes	= thisRef.nodes;
 			
 				Object.keys( nodes ).forEach(function _forEachNode( node ) {
-					nodes[ node ].unbind().undelegate();
+					nodes[ node ].off();
 					
 					if( Public.removeFromDOM && !disableOnly ) {
 						nodes[ node ].remove();
@@ -10964,8 +10966,10 @@ $.transform = {
 										promise.resolve( $$( data[ type ] )[ connectMethod ]( $$target ) );
 										break;
 									case 'ajax':
+										// TODO: implement
 										break;
 									case 'stream':
+										// TODO: implement
 										break;
 								}
 							});
@@ -11266,7 +11270,7 @@ $.transform = {
 			return Public;
 		};
 		
-		Public.lsStore = function lsStore() {
+		Public.lsStore = function _lsStore() {
 			storageObject[ access ] = win.JSON.stringify( buffer );
 			return Public;
 		};

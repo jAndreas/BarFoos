@@ -29,6 +29,8 @@
 		Public.registerApplication = function _registerApplication( app ) {
 			if( Object.type( app ) === 'Object' ) {
 				Application = app;
+
+				Object.freeze( Public );
 				
 				if( 'environment' in Application ) {
 					$.extend( Private, Application.environment );
@@ -39,7 +41,7 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerApplication',
-					msg:	'object was expected, received ' + getLastError() + ' instead'
+					msg:	'object was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -55,7 +57,7 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerSandbox',
-					msg:	'function was expected, received ' + getLastError() + ' instead'
+					msg:	'function was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -86,7 +88,7 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerModule',
-					msg:	'string expected, received ' + getLastError() + ' instead'
+					msg:	'string expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -266,7 +268,7 @@
 					}
 				}
 				else {
-					throw new TypeError( 'Core: error(). String expected - received "' + getLastError() + '" instead.' );
+					throw new TypeError( 'Core: error(). String expected - received "' + win.getLastError() + '" instead.' );
 				}
 			}
 			

@@ -61,7 +61,7 @@
 			return Public;
 		};
 		
-		Public.lsStore = function lsStore() {
+		Public.lsStore = function _lsStore() {
 			storageObject[ access ] = win.JSON.stringify( buffer );
 			return Public;
 		};
