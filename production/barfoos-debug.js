@@ -10012,6 +10012,16 @@ $.transform = {
 			};
 		}
 	}());
+
+	// Object.freeze()
+	Object.freeze = Object.freeze || function _freeze( obj ) {
+		return obj;
+	};
+
+	// Object.seal()
+	Object.seal = Object.seal || function _seal( obj ) {
+		return obj;
+	};
 	
 	// Array.prototype.indexOf()
 	Array.prototype.indexOf = Array.prototype.indexOf || function _indexOf( search /*, startIndex */ ) {
@@ -10206,7 +10216,7 @@ $.transform = {
 				win.oRequestAnimationFrame      || 
 				win.msRequestAnimationFrame     || 
 				function _animationInterval( callback ) {
-					setTimeout( function() {
+					win.setTimeout( function() {
 						if( 'hasFocus' in doc ) {
 							if( doc.hasFocus() ) {
 								callback();
@@ -10395,8 +10405,11 @@ $.transform = {
 					head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
 			
 				return $.Deferred( function _createDeferred( promise ) {
-					scr.onload		= function _onload() {
+					scr.onload		= scr.onreadystatechange = function _onload() {
 						if( !scr.readyState || /complete|loaded/.test( scr.readyState ) ) {
+							scr.onload = scr.onreadystatechange = null;
+							scr = undef;
+						
 							promise.resolve( moduleID, Modules[ moduleID ] );
 						}
 					};

@@ -101,8 +101,11 @@
 					head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
 			
 				return $.Deferred( function _createDeferred( promise ) {
-					scr.onload		= function _onload() {
+					scr.onload		= scr.onreadystatechange = function _onload() {
 						if( !scr.readyState || /complete|loaded/.test( scr.readyState ) ) {
+							scr.onload = scr.onreadystatechange = null;
+							scr = undef;
+						
 							promise.resolve( moduleID, Modules[ moduleID ] );
 						}
 					};

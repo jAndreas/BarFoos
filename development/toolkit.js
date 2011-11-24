@@ -181,6 +181,16 @@
 			};
 		}
 	}());
+
+	// Object.freeze()
+	Object.freeze = Object.freeze || function _freeze( obj ) {
+		return obj;
+	};
+
+	// Object.seal()
+	Object.seal = Object.seal || function _seal( obj ) {
+		return obj;
+	};
 	
 	// Array.prototype.indexOf()
 	Array.prototype.indexOf = Array.prototype.indexOf || function _indexOf( search /*, startIndex */ ) {
@@ -375,7 +385,7 @@
 				win.oRequestAnimationFrame      || 
 				win.msRequestAnimationFrame     || 
 				function _animationInterval( callback ) {
-					setTimeout( function() {
+					win.setTimeout( function() {
 						if( 'hasFocus' in doc ) {
 							if( doc.hasFocus() ) {
 								callback();
