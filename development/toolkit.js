@@ -9,7 +9,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-15
- * Modified: 2011-07-15 Modified Object.lookup()
+ * Modified: 2011-11-30 added .freeze() & .seal() polyfills and String.prototype.sFormat()
  */
 
 !(function _toolkit_wrap( win, doc, undef ) {
@@ -116,6 +116,19 @@
 				}( key, transform.apply( obj, [ key, obj[ key ]] ) ));
 			});
 		}
+	};
+	
+	// simplified sprintf() - Non-standard
+	String.prototype.sFormat = function _simpleFormat( map ) {
+		var myString	= this.toString(),
+			args		= Object.type( map ) === 'Array' ? map : arguments,
+			next		= 0;
+	
+		while( ~myString.indexOf( '%r' ) ) {
+			myString = myString.replace( '%r', args[ next++ ] );
+		}
+		
+		return myString;
 	};
 	
 	// Object.lookup() - Non-standard. Trys to lookup a chain of objects. When finished we return two possible methods, "execute" & "get".

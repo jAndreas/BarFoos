@@ -9,7 +9,7 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-17
- * Changed: 2011-08-11 - added "flaggedForRemoval" property to public module object on .stop()
+ * Changed: 2011-11-30 - loadModule is now IE compliant
  */
 
 !(function _core_wrap( win, doc, $, undef ) {
