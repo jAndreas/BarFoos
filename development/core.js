@@ -282,15 +282,7 @@
 		Public.trim = function _trim() {
 			return $.trim.apply( null, arguments );
 		};
-		
-		Public.Promise = function _Promise() {
-			return $.Deferred.apply( null, arguments );
-		};
-		
-		Public.when	= function _when() {
-			return $.when.apply( null, arguments );
-		};
-		
+				
 		Public.extend = function _extend() {
 			return $.extend.apply( null, arguments );
 		};
