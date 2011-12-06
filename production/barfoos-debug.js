@@ -10831,7 +10831,15 @@ $.transform = {
 				if( !disableOnly ) {
 					nodes = { }; secret = { };
 				}
-			}
+			},
+			$$:	function _$$( node ) {
+				if( typeof node === 'string' ) {
+					return Sandbox.$.apply( null, arguments );
+				}
+				else {
+					return this.findCachedNode( node ) || Sandbox.$.apply( null, arguments );
+				}
+			}.bind( secret )
 		});
 
 		/****** Core Methods (called by the core only) *********** *******/
@@ -11587,7 +11595,7 @@ $.transform = {
 				return ( confirmed || $.fn.is.apply( this, arguments ) );
 			},
 			addClass: function _addClass() {
-				$.fn._addClass.apply( this, arguments );
+				$.fn.addClass.apply( this, arguments );
 				return this;
 			},
 			removeClass: function _removeClass() {
@@ -11640,52 +11648,54 @@ $.transform = {
 						
 							// apply animation on each element in our wrapped set
 							each.call( that, function _eaching( elem ) {
+								win.setTimeout(function _decoupleAnimation() {
 								// if the element is currently animated by us, push the arguments into it's "animQueue" array for later execution
-								if( Public.data( elem, 'animated' ) ) {
-									Public.data( elem, 'animQueue' ).push( args );
-								}
-								else {
-									// apply the transition property along with the duration and easing, also set the css property for animation
-									css.call( [ elem ], transition, 'all ' + duration/1000 + 's ' + (easing && typeof easing === 'string' ? easing : 'ease' ) );
-									css.call( [ elem ], elem.aniprops = props );
-								
-									// create the data property 'animationTimier' on the current element if its not present already
-									if( Object.type( Public.data( elem, 'animationTimer' ) ) !== 'Array' ) {
-										Public.data( elem, 'animationTimer', [ ] );
+									if( Public.data( elem, 'animated' ) ) {
+										Public.data( elem, 'animQueue' ).push( args );
 									}
-									// create the data property 'animQueue' on the current elements if its not present already
-									if( Object.type( Public.data( elem, 'animQueue' ) ) !== 'Array' ) {
-										Public.data( elem, 'animQueue', [ ] );
-									}
+									else {
+										// apply the transition property along with the duration and easing, also set the css property for animation
+										css.call( [ elem ], transition, 'all ' + duration/1000 + 's ' + (easing && typeof easing === 'string' ? easing : 'ease' ) );
+										css.call( [ elem ], elem.aniprops = props );
 									
-									Public.data( elem, 'animated', true );
-									elem.stopAnimation = null;
-									
-									// invoke a new function(-context) to avoid that all timeout callbacks would closure the same variable
-									// store the timeout id in the 'animationTimer' array which is a data property
-									(function _freeClosure( myElem ) {
-										Public.data( myElem, 'animationTimer').push(win.setTimeout(function _animationDelay() {
-											// TODO: initialize an interval which checks if there still are css prop deltas to be more accurate. 
-											css.call( [ myElem ], transition, '' );
-											
-											Public.removeData( myElem, 'animated' );
-											delete myElem.aniprops;
+										// create the data property 'animationTimier' on the current element if its not present already
+										if( Object.type( Public.data( elem, 'animationTimer' ) ) !== 'Array' ) {
+											Public.data( elem, 'animationTimer', [ ] );
+										}
+										// create the data property 'animQueue' on the current elements if its not present already
+										if( Object.type( Public.data( elem, 'animQueue' ) ) !== 'Array' ) {
+											Public.data( elem, 'animQueue', [ ] );
+										}
 										
-											// if elements animQueue is available and not empty, execute outstanding animations first
-											if( Object.type( Public.data( myElem, 'animQueue') ) === 'Array' && Public.data( myElem, 'animQueue' ).length ) {
-												_animate.apply( that, Public.data( myElem, 'animQueue').shift() );
-											}
-											else {
-												if( typeof callback === 'function' && !myElem.stopAnimation ) {
-													callback.apply( myElem, [  ] );
+										Public.data( elem, 'animated', true );
+										elem.stopAnimation = null;
+										
+										// invoke a new function(-context) to avoid that all timeout callbacks would closure the same variable
+										// store the timeout id in the 'animationTimer' array which is a data property
+										(function _freeClosure( myElem ) {
+											Public.data( myElem, 'animationTimer').push(win.setTimeout(function _animationDelay() {
+												// TODO: initialize an interval which checks if there still are css prop deltas to be more accurate. 
+												css.call( [ myElem ], transition, '' );
+												
+												Public.removeData( myElem, 'animated' );
+												delete myElem.aniprops;
+											
+												// if elements animQueue is available and not empty, execute outstanding animations first
+												if( Object.type( Public.data( myElem, 'animQueue') ) === 'Array' && Public.data( myElem, 'animQueue' ).length ) {
+													_animate.apply( that, Public.data( myElem, 'animQueue').shift() );
 												}
 												else {
-													myElem.stopAnimation = null;
+													if( typeof callback === 'function' && !myElem.stopAnimation ) {
+														callback.apply( myElem, [  ] );
+													}
+													else {
+														myElem.stopAnimation = null;
+													}
 												}
-											}
-										}, duration + 15));
-									}( elem ));
-								}
+											}, duration + 15));
+										}( elem ));
+									}
+								}, 15);
 								
 							});
 							

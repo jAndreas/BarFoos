@@ -55,7 +55,15 @@
 				if( !disableOnly ) {
 					nodes = { }; secret = { };
 				}
-			}
+			},
+			$$:	function _$$( node ) {
+				if( typeof node === 'string' ) {
+					return Sandbox.$.apply( null, arguments );
+				}
+				else {
+					return this.findCachedNode( node ) || Sandbox.$.apply( null, arguments );
+				}
+			}.bind( secret )
 		});
 
 		/****** Core Methods (called by the core only) *********** *******/
