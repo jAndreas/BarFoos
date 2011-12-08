@@ -248,7 +248,7 @@
 				return this;
 			},
 			removeClass: function _removeClass() {
-				$.fn._removeClass.apply( this, arguments );
+				$.fn.removeClass.apply( this, arguments );
 				return this;
 			},
 			toggleClass: function _toggleClass() {
