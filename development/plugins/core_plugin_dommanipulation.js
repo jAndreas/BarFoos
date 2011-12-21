@@ -80,14 +80,17 @@
 			},
 			push: push,
 			splice: splice,
-			add: function _add() {
-				var newRef	= this.constructor(),
-					args	= arguments;
-					
-				newRef.prevRef = this;
-				push.apply( newRef, $.fn.add.apply( this, args ).get() );
+			add: function _add( newItem ) {
+				if( Object.type( newItem ) === 'Node' ) {
+					push.call( this, newItem );
+				}
+				else if( Object.type( newItem ) === 'Object' ) {
+					if( Object.type( newItem[ 0 ] ) === 'Node' ) {
+						push.call( this, newItem[ 0 ] );
+					}
+				}
 
-				return newRef;
+				return this;
 			},
 			clone: function _clone() {
 				var newRef	= this.constructor(),

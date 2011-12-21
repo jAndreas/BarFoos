@@ -33,9 +33,11 @@
 		}
 		
 		Public.data = function _data( elem, key, value ) {
-			var rVal = $.data( elem, key, value );
-			
-			return value ? this : rVal;
+			if( elem ) {
+				var rVal = $.data( elem, key, value );
+				
+				return value ? this : rVal;
+			}
 		};
 		
 		Public.removeData = function _removeData( elem, key ) {
