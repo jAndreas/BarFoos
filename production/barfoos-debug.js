@@ -11305,9 +11305,11 @@ $.transform = {
 		}
 		
 		Public.data = function _data( elem, key, value ) {
-			var rVal = $.data( elem, key, value );
-			
-			return value ? this : rVal;
+			if( elem ) {
+				var rVal = $.data( elem, key, value );
+				
+				return value ? this : rVal;
+			}
 		};
 		
 		Public.removeData = function _removeData( elem, key ) {
@@ -11367,12 +11369,28 @@ $.transform = {
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
 		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.7.0 ******** *******/
 		/****** ************************************************** *******/
-		var	push	= Array.prototype.push,
-			slice	= Array.prototype.slice,
-			splice	= Array.prototype.splice,
-			each	= Array.prototype.forEach,
-			some	= Array.prototype.some,
-			css		= $.fn.css;
+		var	push			= Array.prototype.push,
+			slice			= Array.prototype.slice,
+			splice			= Array.prototype.splice,
+			each			= Array.prototype.forEach,
+			some			= Array.prototype.some,
+			css				= $.fn.css,
+			// little 'detection' for transitionend event name
+			dummy			= doc.createElement( 'div' ),
+			eventNameHash	= { webkit: 'webkitTransitionEnd', Moz: 'transitionend', O: 'oTransitionEnd', ms: 'MSTransitionEnd' },
+			transitionEnd	= (function _getTransitionEndEventName() {
+								var retValue = 'transitionend';
+								
+								Object.keys( eventNameHash ).some(function( vendor ) {
+									if( vendor + 'TransitionProperty' in dummy.style ) {
+										retValue = eventNameHash[ vendor ];
+										return true;
+									}
+								});
+								
+								return retValue;
+							}());
+			
 		
 		Public.$ = function _$( selector, args ) {
 			function Init( sel ) {
@@ -11431,14 +11449,17 @@ $.transform = {
 			},
 			push: push,
 			splice: splice,
-			add: function _add() {
-				var newRef	= this.constructor(),
-					args	= arguments;
-					
-				newRef.prevRef = this;
-				push.apply( newRef, $.fn.add.apply( this, args ).get() );
+			add: function _add( newItem ) {
+				if( Object.type( newItem ) === 'Node' ) {
+					push.call( this, newItem );
+				}
+				else if( Object.type( newItem ) === 'Object' ) {
+					if( Object.type( newItem[ 0 ] ) === 'Node' ) {
+						push.call( this, newItem[ 0 ] );
+					}
+				}
 
-				return newRef;
+				return this;
 			},
 			clone: function _clone() {
 				var newRef	= this.constructor(),
@@ -11630,7 +11651,7 @@ $.transform = {
 			animate: (function _animateAdvancedConditional() {
 				var	transition		= Public.createCSS('Transition');
 				
-				if(transition ) {
+				if( transition ) {
 					return function _animate( props, duration, callback, easing ) {
 						var that	= this,
 							args	= arguments;
@@ -11649,19 +11670,16 @@ $.transform = {
 							// apply animation on each element in our wrapped set
 							each.call( that, function _eaching( elem ) {
 								win.setTimeout(function _decoupleAnimation() {
-								// if the element is currently animated by us, push the arguments into it's "animQueue" array for later execution
+									// if the element is currently animated by us, push the arguments into it's "animQueue" array for later execution
 									if( Public.data( elem, 'animated' ) ) {
 										Public.data( elem, 'animQueue' ).push( args );
 									}
 									else {
 										// apply the transition property along with the duration and easing, also set the css property for animation
-										css.call( [ elem ], transition, 'all ' + duration/1000 + 's ' + (easing && typeof easing === 'string' ? easing : 'ease' ) );
+										//css.call( [ elem ], transition, 'all ' + duration/1000 + 's ' + (easing && typeof easing === 'string' ? easing : 'linear' ) );
+										elem.style[ transition ] = 'all ' + duration/1000 + 's ' + ( easing && typeof easing === 'string' ? easing : 'linear' );
 										css.call( [ elem ], elem.aniprops = props );
 									
-										// create the data property 'animationTimier' on the current element if its not present already
-										if( Object.type( Public.data( elem, 'animationTimer' ) ) !== 'Array' ) {
-											Public.data( elem, 'animationTimer', [ ] );
-										}
 										// create the data property 'animQueue' on the current elements if its not present already
 										if( Object.type( Public.data( elem, 'animQueue' ) ) !== 'Array' ) {
 											Public.data( elem, 'animQueue', [ ] );
@@ -11670,30 +11688,30 @@ $.transform = {
 										Public.data( elem, 'animated', true );
 										elem.stopAnimation = null;
 										
-										// invoke a new function(-context) to avoid that all timeout callbacks would closure the same variable
-										// store the timeout id in the 'animationTimer' array which is a data property
-										(function _freeClosure( myElem ) {
-											Public.data( myElem, 'animationTimer').push(win.setTimeout(function _animationDelay() {
-												// TODO: initialize an interval which checks if there still are css prop deltas to be more accurate. 
-												css.call( [ myElem ], transition, '' );
-												
-												Public.removeData( myElem, 'animated' );
-												delete myElem.aniprops;
+										elem.transitionEndHandler = function _transitionEndHandler() {
+											var animQueue = Public.data( this, 'animQueue');
 											
-												// if elements animQueue is available and not empty, execute outstanding animations first
-												if( Object.type( Public.data( myElem, 'animQueue') ) === 'Array' && Public.data( myElem, 'animQueue' ).length ) {
-													_animate.apply( that, Public.data( myElem, 'animQueue').shift() );
+											this.style[ transition ] = '';
+											this.removeEventListener( transitionEnd, this.transitionEndHandler, false );
+											this.transitionEndHandler = null;
+											
+											Public.removeData( this, 'animated' );
+											delete this.aniprops;
+											
+											if( Object.type( animQueue ) === 'Array' && animQueue.length ) {
+												_animate.apply( [ this ], Public.data( this, 'animQueue').shift() );
+											}
+											else {
+												if( typeof callback === 'function' && !this.stopAnimation ) {
+													callback.call( this );
 												}
 												else {
-													if( typeof callback === 'function' && !myElem.stopAnimation ) {
-														callback.apply( myElem, [  ] );
-													}
-													else {
-														myElem.stopAnimation = null;
-													}
+													this.stopAnimation = null;
 												}
-											}, duration + 15));
-										}( elem ));
+											}
+										};
+										
+										elem.addEventListener( transitionEnd, elem.transitionEndHandler, false );
 									}
 								}, 15);
 								
@@ -11725,27 +11743,22 @@ $.transform = {
 				var transition	= Public.createCSS('Transition');
 				
 				if( transition ) {
-					return function _stop( jumpToEnd ) {
+					return function _stop( jumpToEnd, smooth ) {
 						var that = this;
 						
 						that.each(function( index, elem ) {
 							elem.stopAnimation = true;
 							
-							css.call( [ elem ], transition, '0ms all linear' );
+							elem.style[ transition ] = 'all 0s linear';
+							elem.removeEventListener( transitionEnd, elem.transitionEndHandler, false );
+							elem.transitionEndHandler = null;
 							
 							if( elem.aniprops ) {
 								for( var prop in elem.aniprops ) {
 									if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
-										css.call( [ elem ], prop, css.call( [elem], prop ) );
+										elem.style[ prop ] = win.getComputedStyle( elem, null )[ prop ];
 									}
 								}
-							}
-							
-							// TODO: this section should probably goe into 'jumpToEnd'
-							if( Object.type( Public.data( elem, 'animationTimer' ) ) === 'Array' ) {
-								Public.data( elem, 'animationTimer' ).forEach(function _forEach( timerID ) {
-									win.clearInterval( timerID );
-								});
 							}
 							
 							// clear queued animation requests
@@ -11753,15 +11766,22 @@ $.transform = {
 								Public.data( elem, 'animQueue', [ ] );
 							}
 							
-							Public.data( elem, 'animationTimer', [ ] );
 							Public.removeData( elem, 'animated' );
 							
 							if( jumpToEnd ) {
+								if( smooth ) {
+									elem.style[ transition ] = 'all 0.3s linear';
+									elem.addEventListener( transitionEnd, function _smoothStop() {
+										elem.style[ transition ] = '';
+										elem.removeEventListener( transitionEnd, _smoothStop, false );
+									}, false);
+								}
+								
 								win.setTimeout(function() {
 									if( elem.aniprops ) {
 										for( var prop in elem.aniprops ) {
 											if( prop && elem.aniprops.hasOwnProperty( prop ) ) {
-												css.call( [ elem ], prop, elem.aniprops[ prop ] );
+												elem.style[ prop ] = elem.aniprops[ prop ];
 											}
 										}
 									}
