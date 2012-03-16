@@ -20,7 +20,7 @@
 	Core = (function _Core() {
 		var moduleData	= { },
 			Public		= { },
-			Private		= { },
+			Private		= { ajaxDefault: { } },
 			Application	= { },
 			Sandbox		= function Sandbox() { };
 		
@@ -33,7 +33,7 @@
 				Object.freeze( Public );
 				
 				if( 'environment' in Application ) {
-					$.extend( Private, Application.environment );
+					$.extend( true, Private, Application.environment );
 				}
 			}
 			else {
@@ -64,11 +64,11 @@
 			return Public;
 		};
 		
-		Public.registerModule = function _registerModule( moduleID, creator ) {
-			if( Object.type( moduleID ) === 'String' ) {
+		Public.registerModule = function _registerModule( moduleID, creator, callback ) {
+			if( Object.type( moduleID ) === 'String' && arguments.length === 1 || ( arguments.length >= 2 && Object.type( creator ) !== 'Undefined' ) ) {
 				if( !(moduleID in moduleData) ) {
 					moduleData[ moduleID ] = {
-						creator: creator || Public.loadModule( moduleID ),
+						creator: creator || Public.loadModule( moduleID, callback ),
 						instances: [ ]
 					};
 				}
@@ -88,14 +88,14 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerModule',
-					msg:	'string expected, received ' + win.getLastError() + ' instead'
+					msg:	'string or string/function expected, received ' + win.getLastError( -2 ) + '/' + win.getLastError( -1 ) + ' instead'
 				});
 			}
 			
 			return Public;
 		};
 		
-		Public.loadModule = function _loadModule( moduleID ) {
+		Public.loadModule = function _loadModule( moduleID, callback ) {
 			if( Object.type( moduleID ) === 'String' ) {
 				var scr		= doc.createElement( 'script' ),
 					head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
@@ -106,7 +106,7 @@
 							scr.onload = scr.onreadystatechange = null;
 							scr = undef;
 						
-							promise.resolve( moduleID, Modules[ moduleID ] );
+							promise.resolve( moduleID, Modules[ moduleID ], callback );
 						}
 					};
 					
@@ -127,7 +127,7 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_loadModule',
-					msg:	'string was expected, received ' + getLastError() + ' instead'
+					msg:	'string was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 		};
@@ -161,13 +161,17 @@
 						}
 					}
 					else {
-						$.when( data.creator ).then(function _done( moduleName, moduleCreator ) {
+						$.when( data.creator ).then(function _done( moduleName, moduleCreator, callback ) {
 							data.creator = moduleCreator || data.creator;
 					
 							instances.push( data.creator( Sandbox( Core ), Application, args ) );
 							instances[ 0 ].moduleKey	= Private.globalModuleKey;
 							initResult					= instances[ 0 ].init();
 							data.multipleInstances		= instances[ 0 ].multipleInstances;
+							
+							if( typeof callback === 'function' ) {
+								callback();
+							}
 							
 							if( initResult === -1 ) {
 								Public.stop( moduleID, instances[ 0 ].moduleKey );

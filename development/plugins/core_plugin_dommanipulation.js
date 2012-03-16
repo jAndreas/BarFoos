@@ -165,6 +165,24 @@
 				
 				return newRef;
 			},
+			children: function _children() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+				
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.children.apply( this, args ).get() );
+				
+				return newRef;
+			},
+			filter: function _filter() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+				
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.filter.apply( this, args ).get() );
+				
+				return newRef;
+			},
 			last: function _last() {
 				var newRef	= this.constructor(),
 					args	= arguments;
@@ -198,6 +216,15 @@
 					
 				newRef.prevRef = this;
 				push.apply( newRef, $.fn.replaceWith.apply( this, args ).get() );
+				
+				return newRef;
+			},
+			siblings: function _siblings() {
+				var newRef	= this.constructor(),
+					args	= arguments;
+					
+				newRef.prevRef = this;
+				push.apply( newRef, $.fn.siblings.apply( this, args ).get() );
 				
 				return newRef;
 			},
@@ -263,15 +290,15 @@
 				return ( confirmed || $.fn.is.apply( this, arguments ) );
 			},
 			addClass: function _addClass() {
-				$.fn.addClass.apply( this, arguments );
+				$.fn._addClass.apply( this, arguments );
 				return this;
 			},
 			removeClass: function _removeClass() {
-				$.fn.removeClass.apply( this, arguments );
+				$.fn._removeClass.apply( this, arguments );
 				return this;
 			},
 			toggleClass: function _toggleClass() {
-				$.fn.toggleClass.apply( this, arguments );
+				$.fn._toggleClass.apply( this, arguments );
 				return this;
 			},
 			hasClass: function _hasClass() {
@@ -298,7 +325,7 @@
 			animate: (function _animateAdvancedConditional() {
 				var	transition		= Public.createCSS('Transition');
 				
-				if( transition ) {
+				if(transition ) {
 					return function _animate( props, duration, callback, easing ) {
 						var that	= this,
 							args	= arguments;
@@ -316,7 +343,7 @@
 						
 							// apply animation on each element in our wrapped set
 							each.call( that, function _eaching( elem ) {
-								win.setTimeout(function _decoupleAnimation() {
+								//win.setTimeout(function _decoupleAnimation() {
 									// if the element is currently animated by us, push the arguments into it's "animQueue" array for later execution
 									if( Public.data( elem, 'animated' ) ) {
 										Public.data( elem, 'animQueue' ).push( args );
@@ -337,7 +364,7 @@
 										
 										elem.transitionEndHandler = function _transitionEndHandler() {
 											var animQueue = Public.data( this, 'animQueue');
-											
+										
 											this.style[ transition ] = '';
 											this.removeEventListener( transitionEnd, this.transitionEndHandler, false );
 											this.transitionEndHandler = null;
@@ -360,8 +387,7 @@
 										
 										elem.addEventListener( transitionEnd, elem.transitionEndHandler, false );
 									}
-								}, 15);
-								
+								//}, 15);
 							});
 							
 							return that;

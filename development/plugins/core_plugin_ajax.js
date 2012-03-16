@@ -44,28 +44,39 @@
 			}
 		}
 
-		Public.ajax = function _ajax() {
-			return $.ajax.apply( null, arguments ).done(function _done() {
-				errorCount = 0;
-				
-				switch( state ) {
-					case connectionStates.OK:
-						break;
-					case connectionStates.BAD:
-						Public.dispatch({ name: 'CORE_CONNECTION_RESTORED'});
-						state = connectionStates.OK;
-						break;
-				}
-			}).fail(function _fail() {
-				if( ++errorCount >= 3 ) {
-					Public.dispatch({ name: 'CORE_CONNECTION_LOST', data: {
-						errorCount:	errorCount
-					}});
-					
-					state		= connectionStates.BAD;
-				}
-			});
-		};		
+		Public.request = function _request( params ) {
+			if( Object.type( params ) === 'Object' ) {
+				return $.ajax({
+					url:		params.url			|| Private.ajaxDefault.serverscript,
+					type:		params.type			|| 'POST',
+					dataType:	params.dataType		|| 'json',
+					beforeSend:	params.beforeSend	|| $.noop,
+					timeout:	params.timeout		|| timeout,
+					traditional:	params.traditional	|| true,
+					data:		$.extend({
+						sid:	Private.ajaxDefault.sid || undef,
+						rm:		params.rm	|| undef
+					}, params.data || { } ),
+					success:	params.success		|| $.noop,
+					error:		params.error		|| $.noop,
+					complete:	params.complete		|| $.noop
+				}).done(function _done() {
+					connectionRestored();
+				}).fail(function _fail() {
+					badConnection();
+				}).always(function _always() {
+					// tbd
+				});
+			}
+			else {
+				Public.error({
+					type:	'type',
+					origin:	'Core Plugin Ajax',
+					name:	'_request()',
+					msg:	'Object expected - received "' + win.getLastError() + '" instead'
+				});
+			}
+		};	
 		
 		Public.getJSON = function _getJSON( url ) {
 			return $.ajax({

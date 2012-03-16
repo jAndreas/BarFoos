@@ -29,15 +29,16 @@
 			// findCachedNode searches the nodes object for a specific element. If found, we return the BarFoos wrapped set.
 			findCachedNode:	function _getNode( nodeRef ) {
 				var	thisRef = this,
-					result	= null;
+					result	= null,
+					success	= false;
 				
 				Object.keys( thisRef.nodes ).some(function _some( name ) {
 					result = thisRef.nodes[ name ];
 					
-					return result[ 0 ] === nodeRef;
+					return success = result[ 0 ] === nodeRef;
 				});
 				
-				return result;
+				return success ? result : null;
 			},
 			clearNodeBindings:	function _clearNodeBindings( disableOnly ) {
 				var	thisRef = this,
