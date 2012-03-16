@@ -11693,7 +11693,7 @@ $.transform = {
 						
 							// apply animation on each element in our wrapped set
 							each.call( that, function _eaching( elem ) {
-								//win.setTimeout(function _decoupleAnimation() {
+								win.setTimeout(function _decoupleAnimation() {
 									// if the element is currently animated by us, push the arguments into it's "animQueue" array for later execution
 									if( Public.data( elem, 'animated' ) ) {
 										Public.data( elem, 'animQueue' ).push( args );
@@ -11737,7 +11737,7 @@ $.transform = {
 										
 										elem.addEventListener( transitionEnd, elem.transitionEndHandler, false );
 									}
-								//}, 15);
+								}, 15);
 							});
 							
 							return that;
