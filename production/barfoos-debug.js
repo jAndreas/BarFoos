@@ -11624,18 +11624,33 @@ $.transform = {
 				
 				return ( confirmed || $.fn.is.apply( this, arguments ) );
 			},
-			addClass: function _addClass() {
-				$.fn._addClass.apply( this, arguments );
-				return this;
-			},
-			removeClass: function _removeClass() {
-				$.fn._removeClass.apply( this, arguments );
-				return this;
-			},
-			toggleClass: function _toggleClass() {
-				$.fn._toggleClass.apply( this, arguments );
-				return this;
-			},
+			addClass: (function _addClassConditional() {
+				var addClassMethod = typeof $.fn._addClass === 'function' ? $.fn._addClass : $.fn.addClass;
+				
+				return function _addClass() {
+					addClassMethod.apply( this, arguments );
+					
+					return this;
+				};
+			}()),
+			removeClass: (function _removeClassConditional() {
+				var removeClassMethod = typeof $.fn._removeClass === 'function' ? $.fn._removeClass : $.fn.removeClass;
+				
+				return function _removeClass() {
+					removeClassMethod.apply( this, arguments );
+					
+					return this;
+				};
+			}()),
+			toggleClass: (function _toggleClassConditional() {
+				var toggleClassMethod = typeof $.fn._toggleClass === 'function' ? $.fn._toggleClass : $.fn.toggleClass;
+				
+				return function _toggleClass() {
+					toggleClassMethod.apply( this, arguments );
+					
+					return this;
+				};
+			}()),
 			hasClass: function _hasClass() {
 				return $.fn.hasClass.apply( this, arguments );
 			},
