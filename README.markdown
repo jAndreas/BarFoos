@@ -1,4 +1,4 @@
-![BarFoos logo](http://www.typeofnan.com/img/barfoos.png "BarFoos")
+![BarFoos logo](http://www.typeofnan.com/img/barfoos.png "BarFoos Logo")
 
 #BarFoos#
 
