@@ -25,7 +25,7 @@ therefore continue to work.
 The basic idea here is, that you break down your website into lots of small
 areas. Each area is represented through a BarFoos module. The module now
 only cares about its own tasks and has no idea about the web application as
-a hole. Communication only happens through the Sandbox via a mediator and
+a whole. Communication only happens through the Sandbox via a mediator and
 event types. That technique also enables you to work simultaneously on
 different areas (modules) with several people. There is no tightly coupled
 relationship between modules. That guarantees any change that was made in
