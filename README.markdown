@@ -1,4 +1,6 @@
-![BarFoos logo](http://www.typeofnan.com/img/barfoos.png "BarFoos Logo") - #BarFoos#
+#BarFoos#
+
+![BarFoos logo](http://www.typeofnan.com/img/barfoos.png "BarFoos Logo")
 
 BarFoos is a Javascript application framework. Features are:
 
