@@ -11275,7 +11275,7 @@ $.transform = {
 			buffer		= { },
 			access		= App.name || 'BarFoos';
 		
-		if( Object.type( win.localStorage ) === 'Storage' ) {
+		if( typeof win.localStorage === 'object' ) {
 			storageObject = win.localStorage;
 		}
 		else {

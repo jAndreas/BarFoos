@@ -97,8 +97,9 @@
 		
 		Public.loadModule = function _loadModule( moduleID, callback ) {
 			if( Object.type( moduleID ) === 'String' ) {
-				var scr		= doc.createElement( 'script' ),
-					head	= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement;
+				var scr			= doc.createElement( 'script' ),
+					head		= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement
+					external	= moduleID.indexOf( 'http://' ) === 0;
 			
 				return $.Deferred( function _createDeferred( promise ) {
 					scr.onload		= scr.onreadystatechange = function _onload() {
@@ -106,7 +107,12 @@
 							scr.onload = scr.onreadystatechange = null;
 							scr = undef;
 						
-							promise.resolve( moduleID, Modules[ moduleID ], callback );
+							if( external ) {
+								promise.resolve( moduleID, callback );
+							}
+							else {
+								promise.resolve( moduleID, Modules[ moduleID ], callback );
+							}
 						}
 					};
 					
@@ -117,7 +123,7 @@
 					scr.type		= 'text/javascript';
 					scr.async		= true;
 					scr.defer		= true;
-					scr.src			= Private.modulePath + Private.modulePrefix + moduleID.toLowerCase() + '.js';
+					scr.src			= external ? moduleID : Private.modulePath + Private.modulePrefix + moduleID.toLowerCase() + '.js';
 					
 					head.insertBefore( scr, head.firstChild );
 				}).promise();
@@ -130,6 +136,10 @@
 					msg:	'string was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
+		};
+		
+		Public.require = function _require( path, callback ) {
+			return Public.loadModule( path, callback );
 		};
 		
 		Public.start = function _start( moduleID, args ) {

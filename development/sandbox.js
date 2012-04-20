@@ -40,10 +40,10 @@
 		Private.access = [	'error',	// Core
 							'listen', 'listenOnce', 'once', 'dispatch', 'forget',	// plugin Communication
 							'request', 'getJSON',	// plugin Ajax
-							'Promise', 'when', // Core
+							'Promise', 'when', // plugin Promise Maker
 							'$', 'ready', 'contains', // plugin DOM manipulation
 							'data', 'removeData', 'hasData', 'lsRead', 'lsWrite', 'lsRemove', 'lsStore', 'lsClear', // plugin Data
-							'extend', 'trim', 'createCSS' // Core
+							'extend', 'trim', 'createCSS', 'require' // Core
 		];
 
 		if( Object.type( Core ) === 'Object' ) {
