@@ -40,10 +40,14 @@
 		Private.access = [	'error',	// Core
 							'listen', 'listenOnce', 'once', 'dispatch', 'forget',	// plugin Communication
 							'request', 'getJSON',	// plugin Ajax
-							'Promise', 'when', // Core
+							'Promise', 'when', // plugin Promise Maker
 							'$', 'ready', 'contains', // plugin DOM manipulation
 							'data', 'removeData', 'hasData', 'lsRead', 'lsWrite', 'lsRemove', 'lsStore', 'lsClear', // plugin Data
+<<<<<<< HEAD:sandbox.js
 							'extend', 'trim', 'createCSS' // Core
+=======
+							'extend', 'trim', 'createCSS', 'require' // Core
+>>>>>>> f2c6a26a1a5648f29df7a7939a0292aa060614fe:development/sandbox.js
 		];
 
 		if( Object.type( Core ) === 'Object' ) {
@@ -51,7 +55,7 @@
 				assign( methodName );
 			});
 			
-			return Public;
+			return Object.freeze( Public );
 		}
 		else {
 			throw new ReferenceError( 'Sandbox: No Core specified' );

@@ -9,7 +9,7 @@
  * ------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-15
- * Modified: 2011-07-15 Modified Object.lookup()
+ * Modified: 2011-11-30 added .freeze() & .seal() polyfills and String.prototype.sFormat()
  */
 
 !(function _toolkit_wrap( win, doc, undef ) {
@@ -118,6 +118,19 @@
 		}
 	};
 	
+	// simplified sprintf() - Non-standard
+	String.prototype.sFormat = function _simpleFormat( map ) {
+		var myString	= this.toString(),
+			args		= Object.type( map ) === 'Array' ? map : arguments,
+			next		= 0;
+	
+		while( ~myString.indexOf( '%r' ) ) {
+			myString = myString.replace( '%r', args[ next++ ] );
+		}
+		
+		return myString;
+	};
+	
 	// Object.lookup() - Non-standard. Trys to lookup a chain of objects. When finished we return two possible methods, "execute" & "get".
 	Object.lookup = (function _lookup() {
 		var cache = { };
@@ -181,6 +194,16 @@
 			};
 		}
 	}());
+
+	// Object.freeze()
+	Object.freeze = Object.freeze || function _freeze( obj ) {
+		return obj;
+	};
+
+	// Object.seal()
+	Object.seal = Object.seal || function _seal( obj ) {
+		return obj;
+	};
 	
 	// Array.prototype.indexOf()
 	Array.prototype.indexOf = Array.prototype.indexOf || function _indexOf( search /*, startIndex */ ) {
@@ -375,7 +398,7 @@
 				win.oRequestAnimationFrame      || 
 				win.msRequestAnimationFrame     || 
 				function _animationInterval( callback ) {
-					setTimeout( function() {
+					win.setTimeout( function() {
 						if( 'hasFocus' in doc ) {
 							if( doc.hasFocus() ) {
 								callback();

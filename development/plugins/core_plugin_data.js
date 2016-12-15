@@ -15,17 +15,17 @@
 	"use strict";
 	
 	Object.lookup( 'BarFoos.Core.plugin', 0 ).execute(function( win, doc, $, Private, Public, Sandbox, App, undef ) {
-		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.6.1 ******** *******/
+		/****** BASE LIBRARY ABSTRACTIONS ## JQUERY 1.7.0 ******** *******/
 		/****** ************************************************** *******/
 		var	storageObject	= { },
 			buffer		= { },
 			access		= App.name || 'BarFoos';
 		
-		if( Object.type( win.localStorage ) === 'Storage' ) {
+		if( typeof win.localStorage === 'object' ) {
 			storageObject = win.localStorage;
 		}
 		else {
-			// read cookie into storageObject
+			// TODO: read cookie into storageObject
 		}
 		
 		if( storageObject[ access ] ) {
@@ -33,9 +33,11 @@
 		}
 		
 		Public.data = function _data( elem, key, value ) {
-			var rVal = $.data( elem, key, value );
-			
-			return value ? this : rVal;
+			if( elem ) {
+				var rVal = $.data( elem, key, value );
+				
+				return value ? this : rVal;
+			}
 		};
 		
 		Public.removeData = function _removeData( elem, key ) {
@@ -61,7 +63,7 @@
 			return Public;
 		};
 		
-		Public.lsStore = function lsStore() {
+		Public.lsStore = function _lsStore() {
 			storageObject[ access ] = win.JSON.stringify( buffer );
 			return Public;
 		};

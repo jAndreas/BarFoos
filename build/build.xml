@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="BarFoos Build" default="build" basedir="../"> <!-- one back since we're in build/ -->
+
+
+    <!-- Load in Ant-Contrib to give us access to some very useful tasks! -->
+    <!-- the .jar file is located in the tools directory -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${basedir}/build/tools/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+    
+    <!-- load shell environment -->
+    <property environment="ENV" />
+
+    <!-- load property files -->
+    <property file="build/config/project.properties"/>
+    <property file="build/config/default.properties"/>
+
+    <!-- merge the stylesheet properties -->
+    <var name="stylesheet-files" value="${file.default.stylesheets}, ${file.stylesheets}"/>
+
+    <!-- merge the pages properties -->
+    <var name="page-files" value="${file.pages}, ${file.pages.default.include}"/>
+
+    
+    <!--
+    *************************************************
+    * BASE TARGETS                                  *
+    *************************************************
+    -->
+
+    <target name="build">
+            <echo message="Building a Production Environment..."/>
+            <antcall target="-build.production" />
+    </target>
+    
+    <target name="debug">
+            <echo message="Building a Debug Environment..."/>
+            <antcall target="-build.debug" />
+    </target>
+    
+        
+    <!--
+    *************************************************
+    * BUILD TARGETS                                 *
+    *************************************************
+    -->
+
+    <!-- Target: build -->
+    <target name="-build.production"
+            depends="-rev,
+		     		 -js.all.minify,
+                     -js.main.concat,
+                     -copy,
+                     -clean"/>
+                     
+    <target name="-build.debug"
+            depends="-rev,
+                     -js.debug.concat,
+                     -copy.debug,
+                     -clean"/>
+
+    <!--
+    *************************************************
+    * FUNCTION TARGETS                              *
+    *************************************************
+    -->
+
+    
+    
+    <target name="-rev" description="(PRIVATE) Increase the current build number by one and set build date">
+    <!-- This is a private target -->
+    
+        <echo message="====================================================================="/>
+        <echo message="Welcome to the BarFoos Build Script!"/>
+        <echo message=" "/>
+        <echo message="Let's cook things together now."/>
+        <echo message="====================================================================="/>
+        <echo message=" "/>
+        <echo message=" "/>
+    
+    </target>
+    
+    <target name="-mkdirs">
+      <if>
+          <or>
+            <equals arg1="${dir.publish}" arg2="."/>            
+            <equals arg1="${dir.publish}" arg2=".."/>                      
+            <equals arg1="${dir.publish}" arg2="/"/>                      
+            <equals arg1="${dir.publish}" arg2="./"/>                      
+            <equals arg1="${dir.publish}" arg2="../"/>                      
+          </or>
+          <then>
+            <fail message="Your dir.publish folder is set to ${dir.publish} which could delete your entire site or worse. Change it in project.properties"/>      
+          </then>
+          <else>
+            <echo message="Creating directory structure... ${dir.publish}"/>
+
+            <mkdir dir="${dir.intermediate}"/>
+            <copy todir="${dir.intermediate}" includeEmptyDirs="true">
+                <fileset dir="${dir.source}/" excludes="${file.default.exclude}, ${file.exclude}">
+                    <type type="dir"/>
+                </fileset>
+            </copy>
+            
+            <mkdir dir="${dir.publish}"/>              
+          </else>
+      </if>                  
+    </target>
+    
+    <target name="-copy" depends="-mkdirs">
+    <!-- This is a private target -->
+    
+        <echo message="Copying over new files..."/>
+
+        <copy todir="./${dir.publish}">
+            <filelist dir="./${dir.intermediate}/${dir.js}/" files="barfoos.js"/>
+        </copy>
+        
+        <echo message="A copy of all non-dev files are now in: ./${dir.publish}."/>
+    </target>
+    
+    <target name="-copy.debug" depends="-mkdirs">
+    <!-- This is a private target -->
+    
+        <echo message="Copying over new files..."/>
+
+        <copy todir="./${dir.publish}">
+            <filelist dir="./${dir.intermediate}/${dir.js}/" files="barfoos-debug.js"/>
+        </copy>
+        
+        <echo message="A copy of all non-dev files are now in: ./${dir.publish}."/>
+    </target>
+    	
+    <target name="-js.main.concat" depends="-js.all.minify" description="(PRIVATE) Concatenates the JS files in dir.">
+		<echo message="Concatenating Main JS scripts..."/>
+		<!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+		<concat destfile="./${dir.intermediate}/${dir.js}/barfoos.js">
+			<fileset dir="./${dir.intermediate}/${dir.js}/baselib/">
+				<include name="**/*.js"/>
+			</fileset>
+			<filelist dir="./${dir.intermediate}/${dir.js}/" files="toolkit.js, core.js, sandbox.js, module.js"/>
+			<fileset dir="./${dir.intermediate}/${dir.js}/plugins/">
+				<include name="**/*.js"/>
+			</fileset>
+		</concat>
+	</target>
+	
+    <target name="-js.debug.concat" description="(PRIVATE) Concatenates the JS files in dir.">
+		<echo message="Concatenating Main JS scripts..."/>
+		
+		<copy todir="${dir.intermediate}/">
+            <fileset dir="${dir.source}/" includes="${dir.js}/**/*.js"  />
+        </copy>
+		<!-- overwrite=no here means not to overwrite if the target is newer than the sources -->
+		<concat destfile="./${dir.intermediate}/${dir.js}/barfoos-debug.js">
+			<fileset dir="./${dir.intermediate}/${dir.js}/baselib/">
+				<include name="**/*.js"/>
+			</fileset>
+			<filelist dir="./${dir.intermediate}/${dir.js}/" files="toolkit.js, core.js, sandbox.js, module.js"/>
+			<fileset dir="./${dir.intermediate}/${dir.js}/plugins/">
+				<include name="**/*.js"/>
+			</fileset>
+		</concat>
+	</target>
+       
+    
+    <target name="-js.all.minify" depends="-mkdirs" description="(PRIVATE) Minifies the scripts.js files created by js.scripts.concat">
+        <echo message="Minifying scripts"/>
+        <copy todir="${dir.intermediate}/">
+            <fileset dir="${dir.source}/" includes="${dir.js}/**/*.min.js"  />
+        </copy>
+        <apply executable="java" parallel="false">
+            <fileset dir="${dir.source}/" >
+                <include name="${dir.js}/**/*.js"/>
+                <exclude name="${dir.js}/**/*.min.js"/>
+            </fileset>
+            <arg line="-jar"/>
+            <arg path="./${dir.build.tools}/${tool.yuicompressor}"/>
+            <srcfile/>
+            <arg line="--line-break"/>
+            <arg line="4000"/>
+            <arg line="-o"/>
+            <mapper type="glob" from="*.js" to="${basedir}/${dir.intermediate}/*.js"/>
+            <targetfile/>
+        </apply>
+
+        <!-- at this point all js files are minified with their original names -->
+    </target>    
+    
+    <target name="-clean" description="remove the intermediate folder">
+        <echo message="Removing intermediate directory..."/>
+        <delete dir="./${dir.intermediate}/"/>
+    </target>
+</project>

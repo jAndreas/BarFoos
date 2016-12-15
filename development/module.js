@@ -29,22 +29,23 @@
 			// findCachedNode searches the nodes object for a specific element. If found, we return the BarFoos wrapped set.
 			findCachedNode:	function _getNode( nodeRef ) {
 				var	thisRef = this,
-					result	= null;
+					result	= null,
+					success	= false;
 				
 				Object.keys( thisRef.nodes ).some(function _some( name ) {
 					result = thisRef.nodes[ name ];
 					
-					return result[ 0 ] === nodeRef;
+					return success = result[ 0 ] === nodeRef;
 				});
 				
-				return result;
+				return success ? result : null;
 			},
 			clearNodeBindings:	function _clearNodeBindings( disableOnly ) {
 				var	thisRef = this,
 					nodes	= thisRef.nodes;
 			
 				Object.keys( nodes ).forEach(function _forEachNode( node ) {
-					nodes[ node ].unbind().undelegate();
+					nodes[ node ].off();
 					
 					if( Public.removeFromDOM && !disableOnly ) {
 						nodes[ node ].remove();
@@ -55,7 +56,15 @@
 				if( !disableOnly ) {
 					nodes = { }; secret = { };
 				}
-			}
+			},
+			$$:	function _$$( node ) {
+				if( typeof node === 'string' ) {
+					return Sandbox.$.apply( null, arguments );
+				}
+				else {
+					return this.findCachedNode( node ) || Sandbox.$.apply( null, arguments );
+				}
+			}.bind( secret )
 		});
 
 		/****** Core Methods (called by the core only) *********** *******/
@@ -208,8 +217,10 @@
 										promise.resolve( $$( data[ type ] )[ connectMethod ]( $$target ) );
 										break;
 									case 'ajax':
+										// TODO: implement
 										break;
 									case 'stream':
+										// TODO: implement
 										break;
 								}
 							});

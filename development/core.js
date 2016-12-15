@@ -9,17 +9,18 @@
  * -----------------------------------------
  * Author: Andreas Goebel
  * Date: 2011-03-17
- * Changed: 2011-08-11 - added "flaggedForRemoval" property to public module object on .stop()
+ * Changed: 2011-11-30 - loadModule is now IE compliant
  */
 
 !(function _core_wrap( win, doc, $, undef ) {
 	"use strict";
-	var BF = win.BarFoos = win.BarFoos || { },
+	var BF		= win.BarFoos = win.BarFoos || { },
+		Modules	= BF.Modules = BF.Modules || { },
 	
 	Core = (function _Core() {
 		var moduleData	= { },
 			Public		= { },
-			Private		= { },
+			Private		= { ajaxDefault: { } },
 			Application	= { },
 			Sandbox		= function Sandbox() { };
 		
@@ -28,13 +29,19 @@
 		Public.registerApplication = function _registerApplication( app ) {
 			if( Object.type( app ) === 'Object' ) {
 				Application = app;
+
+				Object.freeze( Public );
+				
+				if( 'environment' in Application ) {
+					$.extend( true, Private, Application.environment );
+				}
 			}
 			else {
 				Public.error({
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerApplication',
-					msg:	'object was expected, received ' + getLastError() + ' instead'
+					msg:	'object was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
@@ -50,18 +57,18 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerSandbox',
-					msg:	'function was expected, received ' + getLastError() + ' instead'
+					msg:	'function was expected, received ' + win.getLastError() + ' instead'
 				});
 			}
 			
 			return Public;
 		};
 		
-		Public.registerModule = function _registerModule( moduleID, creator ) {
-			if( Object.type( moduleID ) === 'String' && Object.type( creator ) === 'Function' ) {
+		Public.registerModule = function _registerModule( moduleID, creator, callback ) {
+			if( Object.type( moduleID ) === 'String' && arguments.length === 1 || ( arguments.length >= 2 && Object.type( creator ) !== 'Undefined' ) ) {
 				if( !(moduleID in moduleData) ) {
 					moduleData[ moduleID ] = {
-						creator: creator,
+						creator: creator || Public.loadModule( moduleID, callback ),
 						instances: [ ]
 					};
 				}
@@ -81,11 +88,58 @@
 					type:	'type',
 					origin:	'Core',
 					name:	'_registerModule',
-					msg:	'string/function pair expected, received ' + getLastError( -2 ) + '/' + getLastError( -1 ) + ' instead'
+					msg:	'string or string/function expected, received ' + win.getLastError( -2 ) + '/' + win.getLastError( -1 ) + ' instead'
 				});
 			}
 			
 			return Public;
+		};
+		
+		Public.loadModule = function _loadModule( moduleID, callback ) {
+			if( Object.type( moduleID ) === 'String' ) {
+				var scr			= doc.createElement( 'script' ),
+					head		= doc.head || doc.getElementsByTagName( 'head' )[ 0 ] || doc.documentElement
+					external	= moduleID.indexOf( 'http://' ) === 0;
+			
+				return $.Deferred( function _createDeferred( promise ) {
+					scr.onload		= scr.onreadystatechange = function _onload() {
+						if( !scr.readyState || /complete|loaded/.test( scr.readyState ) ) {
+							scr.onload = scr.onreadystatechange = null;
+							scr = undef;
+						
+							if( external ) {
+								promise.resolve( moduleID, callback );
+							}
+							else {
+								promise.resolve( moduleID, Modules[ moduleID ], callback );
+							}
+						}
+					};
+					
+					scr.onerror		= function _onerror( err ) {
+						promise.reject( moduleID, err );
+					};
+					
+					scr.type		= 'text/javascript';
+					scr.async		= true;
+					scr.defer		= true;
+					scr.src			= external ? moduleID : Private.modulePath + Private.modulePrefix + moduleID.toLowerCase() + '.js';
+					
+					head.insertBefore( scr, head.firstChild );
+				}).promise();
+			}
+			else {
+				Public.error({
+					type:	'type',
+					origin:	'Core',
+					name:	'_loadModule',
+					msg:	'string was expected, received ' + win.getLastError() + ' instead'
+				});
+			}
+		};
+		
+		Public.require = function _require( path, callback ) {
+			return Public.loadModule( path, callback );
 		};
 		
 		Public.start = function _start( moduleID, args ) {
@@ -117,14 +171,24 @@
 						}
 					}
 					else {
-						instances.push( data.creator( Sandbox( this ), Application, args ) );
-						instances[ 0 ].moduleKey = Private.globalModuleKey;
-						initResult = instances[ 0 ].init();
-						data.multipleInstances = instances[ 0 ].multipleInstances;
-						
-						if( initResult === -1 ) {
-							Public.stop( moduleID, instances[ 0 ].moduleKey );
-						}
+						$.when( data.creator ).then(function _done( moduleName, moduleCreator, callback ) {
+							data.creator = moduleCreator || data.creator;
+					
+							instances.push( data.creator( Sandbox( Core ), Application, args ) );
+							instances[ 0 ].moduleKey	= Private.globalModuleKey;
+							initResult					= instances[ 0 ].init();
+							data.multipleInstances		= instances[ 0 ].multipleInstances;
+							
+							if( typeof callback === 'function' ) {
+								callback();
+							}
+							
+							if( initResult === -1 ) {
+								Public.stop( moduleID, instances[ 0 ].moduleKey );
+							}
+						}, function _fail( moduleName, err ) {
+							// TODO: I did not decide what to do here. Try reloading the module ? Throw ? Warn? 
+						});
 					}
 				} catch( ex ) {
 					Public.error({
@@ -221,7 +285,7 @@
 					}
 				}
 				else {
-					throw new TypeError( 'Core: error(). String expected - received "' + getLastError() + '" instead.' );
+					throw new TypeError( 'Core: error(). String expected - received "' + win.getLastError() + '" instead.' );
 				}
 			}
 			
@@ -232,15 +296,7 @@
 		Public.trim = function _trim() {
 			return $.trim.apply( null, arguments );
 		};
-		
-		Public.Promise = function _Promise() {
-			return $.Deferred.apply( null, arguments );
-		};
-		
-		Public.when	= function _when() {
-			return $.when.apply( null, arguments );
-		};
-		
+				
 		Public.extend = function _extend() {
 			return $.extend.apply( null, arguments );
 		};
@@ -252,9 +308,79 @@
 			
 			return Public;
 		};
+		
+		// createCSS returns a cross-browser compatible CSS string. For instance, .createCSS('boxShadow') returns "MozBoxShadow" in FF<4 while in WebKit browsers the result is just "boxShadow"
+		Public.createCSS = (function _createCSS() {
+			var div				= doc.createElement( 'div' ),
+				divStyle		= div.style,
+				ret				= null,
+				cache			= { };
+	
+			return function _createCSSClosure( name ) {
+				// convert names like "font-width" into css camelCase form like "fontWidth"
+				name = name.replace( /-(\w)/g, function _replace( $1, $2 ) {
+					return $2.toUpperCase();
+				});
+				
+				// check if we already got that css string in our lookup-cache table
+				if( name in cache ) { return cache[ name ]; }
+
+				// now check if "name" can get found by looping over propertys from our testDiv style object 
+				for( var prop in divStyle ) {
+					if( prop.toLowerCase() === name.toLowerCase() ) {
+						cache[ name ] = prop;
+						return prop;
+					}
+				}
+				
+				// at this point, do another check for WebKit browsers
+				if( name in divStyle ) {
+					cache[ name ] = name;
+					return name;
+				}
+
+				// still no match, try to lookup things with vendor prefixes, again any match will get cached in our closured lookup table object.
+				name = name.replace( /^./, name.charAt( 0 ).toUpperCase() );
+				'Moz Webkit ms O'.split( ' ' ).some(function _some( prefix ) {
+					ret = prefix + name;
+
+					if( name in divStyle ) {
+						ret = cache[ name ] = name;
+						return true;
+					}
+					
+					if( name.toLowerCase() in divStyle ) {
+						ret = cache[ name ] = name.toLowerCase();
+						return true;
+					}
+
+					if( ret in divStyle ) {
+						cache[ name ] = ret;
+						return true;
+					}
+
+					for( var prop in divStyle ) {
+						if( prop.toLowerCase() === ret.toLowerCase() ) {
+							ret = cache[ name ] = prop;
+							return true;
+						}
+					}
+
+					// we tried, we tried really hard but we could not resolve anything for that css string.
+					ret = null;
+				});
+
+				return ret;
+			};
+		}());
 		/*^^^^^ ^^^^^^^^^^^^^^^^^^^BLOCK END^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^*/
 		
-		Private.globalModuleKey = 0;
+		$.extend(Private, {
+			globalModuleKey:	0,
+			jsPath:				'/js',
+			modulePath:			'/js/modules/',
+			modulePrefix:		'm_'
+		});
 		
 		Private.formatStacktrace = function( strace ) {
 			if( Object.type( strace ) === 'String' ) {

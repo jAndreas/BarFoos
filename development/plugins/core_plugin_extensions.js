@@ -31,6 +31,11 @@
 					
 					return this;
 				},
+				resizable:		function _resizable() {
+					$.fn.resizable.apply( this, arguments );
+					
+					return this;
+				},
 				slider:			function _slider() {
 					$.fn.slider.apply( this, arguments );
 					
